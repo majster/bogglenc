@@ -1,39 +1,47 @@
-<div>
-
-  <div class="">
-    <div class="board">
-      <div *ngFor="let row of board; let rowIndex = index" class="d-flex justify-content-around">
-        <!--    <app-cell *ngFor="let cell of row; let colIndex = index"-->
-        <!--    [letter]="cell.letter"-->
-        <!--    (selectedEvent)="selectCell(0,0)"></app-cell>-->
-        <button (click)="selectCell(rowIndex, colIndex)" *ngFor="let cell of row; let colIndex = index"
-                [class.last-letter]="isCellLastSelected(cell)"
-                [class.selected]="cell.selected"
-                class="btn btn-outline-secondary cell rounded-2 shadow-sm">
-          {{ cell.letter }}
+<div class="board">
+    <div class="board-grid">
+        <button (click)="selectCell(index)"
+                *ngFor="let gameCell of gameService.boardBag; let index = index"
+                [class.last-letter]="isCellLastSelected(gameCell)"
+                [class.selected]="gameCell.selected"
+                class="btn board-cell card shadow-sm">
+            <div class="card-body">
+                {{ gameCell.value }}
+            </div>
         </button>
-      </div>
-      <div class="card border-1 border mt-3" style="margin-left: 10px; margin-right: 10px; font-size: 1.25rem;">
-        <div class="card-body">
-          <div *ngIf="currentWord" class="d-flex justify-content-between">
-            <button (click)="restCurrentWord()"  class="btn btn-outline-secondary rounded-1 ps-3 pe-3">🗑</button>
-            <div>{{currentWord}}</div>
-            <button (click)="submit()" class="btn btn-outline-primary rounded-1 ps-3 pe-3">🚀</button>
-          </div>
-          <div *ngIf="!currentWord" class="text-muted text-center">Izberi besedo</div>
-        </div>
-      </div>
     </div>
 
+    <div class="commands">
+        <div class="card border-1 border mt-3">
+            <div class="card-body">
+                <div *ngIf="currentWord" class="d-flex justify-content-between align-items-center">
+                    <button (click)="restCurrentWord()" class="btn btn-outline-secondary rounded-1 ps-3 pe-3">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                    <div class="flex-grow-1 justify-content-center d-flex align-items-center">
+                        <div class="me-2">{{currentWord}}</div>
+                        <span *ngIf="currentWord.length > 2" class="text-muted"
+                              style="font-size: 12px;">({{calculateScore(currentWord)}} točk)</span>
+                        <span *ngIf="currentWord.length < 3" class="text-muted"
+                              style="font-size: 12px;">(Vsaj 3 črke)</span>
+                    </div>
+                    <button (click)="submit()"
+                            *ngIf="!wordInvalid"
+                            [disabled]="currentWord.length < 3"
+                            class="btn btn-outline-primary rounded-1 ps-3 pe-3">
+                        <i class="bi bi-send"></i>
+                    </button>
 
-    <!--    <div class="input-group mt-3">-->
-    <!--      <input [value]="currentWord" aria-describedby="button-addon2" aria-label="Izbrana beseda" class="form-control"-->
-    <!--             disabled-->
-    <!--             placeholder="Izbrana beseda"-->
-    <!--             type="text">-->
-    <!--      <button (click)="submit()" class="btn btn-primary" id="button-addon2" type="button">Preveri</button>-->
-    <!--    </div>-->
-    <!--    <div *ngIf="wordInvalid" class="text-danger">Ne valja =)</div>-->
-  </div>
+                    <button *ngIf="wordInvalid"
+                            class="btn btn-outline-danger rounded-1 ps-3 pe-3">
+                        <i class="bi bi-x"></i>
+                    </button>
 
+                </div>
+                <div *ngIf="!currentWord" class="text-muted text-center">Poišči besedo, čas se izteka!</div>
+            </div>
+        </div>
+
+        <div *ngIf="wordInvalid" class="alert alert-danger mt-2 text-center text-danger">Neznana beseda</div>
+    </div>
 </div>

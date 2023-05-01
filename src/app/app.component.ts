@@ -10,6 +10,6 @@ export class AppComponent extends GameComponent {
 
   override ngOnInit() {
     super.ngOnInit();
-    this.gameService.generateLevelOneBag();
+    this.gameService.setupGame()
   }
 }

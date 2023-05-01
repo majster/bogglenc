@@ -1,64 +1,137 @@
 <div class="d-flex ps-2">
-  <div (click)="actionOpenInventoryModal(lettersBag)"
-       class="btn btn-outline-secondary rounded-5 p-2 position-relative me-2"
-       style="font-size: 1.25rem; width: 48px; height: 48px;">
-    <i class="bi bi-bag position-absolute" style="top: 7px; left: 13px"></i>
-  </div>
+    <div (click)="actionOpenInventoryModal(lettersBag)"
+         class="btn btn-outline-secondary rounded-5 p-2 position-relative me-4"
+         style="font-size: 1.25rem; width: 48px; height: 48px;">
+        <i class="bi bi-bag position-absolute" style="top: 7px; left: 13px"></i>
+    </div>
 
-  <div  (click)="actionOpenInventoryModal(hourGlass)"
-        class="btn btn-outline-secondary rounded-5 position-relative me-2"
-        style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
-    <circle-progress
-      class="position-absolute"
-      style="top: -12px;left: -12px;"
-      [innerStrokeWidth]="0"
-      [outerStrokeWidth]="5"
-      [outerStrokeColor]="'#0d6efd'"
-      [percent]="gameService.timeProgress"
-      [radius]="25"
-      [subtitle]="''"
-      [title]="''"
-      [units]="''"
-      [animation]="false"
-    ></circle-progress>
-    <i class="bi bi-hourglass position-absolute" style="top: 7px; left: 13px"></i>
-  </div>
-  <div
-    *ngIf="false"
-    class="btn btn-outline-secondary rounded-5 p-2 position-relative"
-    style="font-size: 1.25rem; width: 48px; height: 48px;">
-    <i class="bi bi-gift position-absolute" style="top: 7px; left: 13px"></i>
-  </div>
+    <div (click)="actionOpenInventoryModal(hourGlass)"
+         class="btn btn-outline-secondary rounded-5 position-relative me-4"
+         style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
+        <circle-progress
+                [animation]="false"
+                [innerStrokeWidth]="0"
+                [outerStrokeColor]="'#0d6efd'"
+                [outerStrokeWidth]="5"
+                [percent]="gameService.timeProgress"
+                [radius]="25"
+                [subtitle]="''"
+                [title]="''"
+                [units]="''"
+                class="position-absolute"
+                style="top: -12px;left: -12px;"
+        ></circle-progress>
+        <i class="bi bi-hourglass position-absolute" style="top: 7px; left: 13px"></i>
+    </div>
+    <div
+            (click)="actionOpenInventoryModal(levelUp)"
+            *ngIf="gameService.unAppliedLevelUps.length > 0"
+            class="btn btn-success rounded-5 p-2 position-relative"
+            style="font-size: 1.25rem; width: 48px; height: 48px;">
+        <i class="bi  bi-chevron-double-up position-absolute" style="top: 7px; left: 13px"></i>
+    </div>
+
+    <button (click)="gameService.createNewGame()" class="btn btn-outline-secondary ms-auto">Nova Igra</button>
 </div>
 
 <ng-template #lettersBag>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-bag"></i> Vreča Črk</h4>
-    <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="alert alert-info">Seznam razpoložljivih črk iz katerih se polni igralna površina.</div>
-
-    <div class="d-flex flex-wrap bg-light p-1">
-      <div *ngFor="let boggleLetter of gameService.lettersBag"
-           class="shadow-sm bg-body border border-1 rounded-2 p-2 m-1 text-center"
-           style="min-width: 45px">
-        {{boggleLetter.value}}
-      </div>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-bag"></i> Vreča Črk</h4>
+        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
     </div>
-  </div>
+    <div class="modal-body">
+        <div class="alert alert-info">Seznam črk iz katerih se polni igralna površina.</div>
+
+        <div class="card mb-2">
+            <div class="card-header">Seznam razpoložljivih črk ({{gameService.upcomingLetters.length}})</div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap bg-light p-1">
+                    <div *ngFor="let boggleLetter of gameService.upcomingLetters"
+                         class="shadow-sm bg-body border border-1 rounded-2 p-2 m-1 text-center"
+                         style="min-width: 45px">
+                        {{boggleLetter.value}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Seznam uporabljenih črk ({{gameService.discardedLetters.length}})</div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap bg-light p-1">
+                    <div *ngFor="let boggleLetter of gameService.discardedLetters"
+                         class="shadow-sm bg-body border border-1 rounded-2 p-2 m-1 text-center"
+                         style="min-width: 45px">
+                        {{boggleLetter.value}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </ng-template>
 
 <ng-template #hourGlass>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-hourglass"></i> Časovna omejitev</h4>
-    <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="alert alert-info">Ko se čas izteče je konec igre.</div>
-  </div>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-hourglass"></i> Časovna omejitev</h4>
+        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-info">Ko se čas izteče je konec igre.</div>
+    </div>
+</ng-template>
+
+<ng-template #levelUp>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-chevron-double-up"></i> Nadgradnja</h4>
+        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" *ngIf="gameService.unAppliedLevelUps.length > 0">
+        <div class="">
+            <div class="d-flex justify-content-around">
+                <!--                <div class="">-->
+                <!--                    <button class="card h-100">-->
+                <!--                        <div class="card-header">Pomoč v sili</div>-->
+                <!--                        <div class="card-body"></div>-->
+                <!--                    </button>-->
+                <!--                </div>-->
+                <div class="">
+                    <button (click)="selectUpgrade(gameService.unAppliedLevelUps[0].commonLetter)"
+                            [class.bg-primary]="selectedUpgrade === gameService.unAppliedLevelUps[0].commonLetter"
+                            [class.text-white]="selectedUpgrade === gameService.unAppliedLevelUps[0].commonLetter"
+                            class="card h-100 btn btn-light">
+                        <div class="card-header">
+                            <i class="bi bi-bag-plus"></i>
+                            Pogosta črka
+                        </div>
+                        <div class="card-body text-center w-100" style="font-size: 3rem">
+                            {{gameService.unAppliedLevelUps[0].commonLetter}}
+                        </div>
+                    </button>
+                </div>
+                <div class="">
+                    <button (click)="selectUpgrade(gameService.unAppliedLevelUps[0].unCommonLetter)"
+                            [class.bg-primary]="selectedUpgrade === gameService.unAppliedLevelUps[0].unCommonLetter"
+                            [class.text-white]="selectedUpgrade === gameService.unAppliedLevelUps[0].unCommonLetter"
+                            class="card h-100 btn btn-light">
+                        <div class="card-header">
+                            <i class="bi bi-bag-plus"></i>
+                            Redka črka
+                        </div>
+                        <div class="card-body text-center w-100" style="font-size: 3rem">
+                            {{gameService.unAppliedLevelUps[0].unCommonLetter}}
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="confirmUpgrade()">Potrdi</button>
+    </div>
 </ng-template>

@@ -1,26 +1,39 @@
-.board{
-  width: 400px;
+$board-grid-dimensions: 30rem;
+.board-grid {
+  height: $board-grid-dimensions;
+  width: $board-grid-dimensions;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
-.cell {
-  //background: #FFF;
+$board-cell-dimensions: 6.5rem;
+$board-cell-margin-right: 1rem;
+.board-cell {
+  height: $board-cell-dimensions;
+  width: $board-cell-dimensions;
+  margin: 0;
+  margin-right: $board-cell-margin-right;
+  border-width: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 80px;
-  min-height: 80px;
-  font-size: 24px;
-  font-weight: bold;
-  margin: 5px;
-  cursor: pointer;
-  user-select: none;
-  color: black;
+  font-size: 3rem;
+
+  &.selected {
+    background-color: #dfdfdf;
+  }
+
+  &.last-letter {
+    background-color: var(--bs-primary);
+    color: white;
+  }
 }
 
-.cell.selected {
-  background-color: #dfdfdf;
+.board {
+  width: $board-grid-dimensions;
 }
-.cell.last-letter {
-  background-color: var(--bs-primary);
-  color: white;
+
+.commands {
+  margin-right: $board-cell-margin-right;
 }

@@ -1,12 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BoggleLetter, GameService} from "../game.service";
-
-interface BoggleCell {
-  letter: string;
-  selected: boolean;
-  selectedIndex: number
-}
 
 
 @Component({
@@ -14,45 +8,21 @@ interface BoggleCell {
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent {
 
-
-  board: BoggleCell[][];
-  selectedRow: number | null = null;
-  selectedCol: number | null = null;
   currentWord: string = '';
   wordInvalid = false;
+  protected readonly indexedDB = indexedDB;
 
   constructor(private httpClient: HttpClient, public gameService: GameService) {
-    this.board = [];
+
   }
 
-  generateBoard() {
-    for (let i = 0; i < 4; i++) {
-      this.board[i] = [];
-      for (let j = 0; j < 4; j++) {
-        const randomLetter = this.randomLetter(this.gameService.lettersBag);
-
-        this.board[i][j] = {
-          letter: randomLetter,
-          selected: false,
-          selectedIndex: 0
-        }
-      }
-    }
-  }
-
-  ngOnInit(): void {
-
-    this.generateBoard();
-  }
-
-  selectCell(row: number, col: number) {
+  selectCell(index: number) {
     this.wordInvalid = false
-    const sorted = this.getSorted();
-    const cell = this.board[row][col];
-
-    if (cell.selected && cell === sorted[0]) {
+    let cell = this.gameService.boardBag[index];
+    let sortedBySelectedIndex = this.getSortedBySelectedIndex();
+    if (cell.selected && cell === sortedBySelectedIndex[0]) {
       // unselect
       cell.selected = false;
       cell.selectedIndex = 0;
@@ -64,15 +34,13 @@ export class BoardComponent implements OnInit {
       return;
     }
 
-    cell.selectedIndex = sorted[0].selectedIndex + 1;
+    cell.selectedIndex = sortedBySelectedIndex[0].selectedIndex + 1;
 
     // Get the selected letter
-    const letter = cell.letter;
+    const letter = cell.value;
 
     // Select the new cell and update the selected row and col
     cell.selected = true;
-    this.selectedRow = row;
-    this.selectedCol = col;
 
     // Add the selected letter to the current word
     this.currentWord += letter;
@@ -89,30 +57,39 @@ export class BoardComponent implements OnInit {
     return score;
   }
 
-  isCellLastSelected(cell: BoggleCell) {
+  isCellLastSelected(cell: BoggleLetter) {
+
     if (!cell.selected) {
       return false;
     }
-    const sorted = this.getSorted();
+    const sorted = this.getSortedBySelectedIndex();
     return cell === sorted[0];
   }
 
   submit() {
+    // this.wordCorrect();
+    // this.wordInvalid = true;
     this.httpClient.get(`http://127.0.0.1:5001/boggelnc/us-central1/wordCheck?word=${this.currentWord}`, {responseType: "text"})
       .subscribe(value => {
         if (value === this.currentWord) {
-          this.gameService.score += this.calculateScore(this.currentWord);
-          this.shoot();
-          this.shoot();
-          this.shoot();
-          this.gameService.guessedWords.push(this.currentWord)
-          this.currentWord = '';
-          this.wordInvalid = false
-          this.generateBoard();
+          this.wordCorrect();
         }
       }, error => {
         this.wordInvalid = true;
       });
+  }
+
+  private wordCorrect() {
+    this.gameService.score += this.calculateScore(this.currentWord);
+    this.shoot();
+    this.shoot();
+    this.shoot();
+    this.gameService.guessedWords.push(this.currentWord)
+    this.currentWord = '';
+    this.wordInvalid = false
+    this.gameService.replaceSelectedCells();
+    this.gameService.levelUp();
+    this.gameService.createTimer();
   }
 
   shoot() {
@@ -122,7 +99,7 @@ export class BoardComponent implements OnInit {
         spread: this.random(10, 50),
         particleCount: this.random(40, 50),
         origin: {
-          y: 0.2
+          y: 0.5
         }
       });
     } catch (e) {
@@ -141,23 +118,13 @@ export class BoardComponent implements OnInit {
   restCurrentWord() {
     this.currentWord = '';
     this.wordInvalid = false
-    this.board.flat().forEach(value => {
+    this.gameService.boardBag.forEach(value => {
       value.selected = false
     })
   }
 
-  private getSorted() {
-    return this.board.flat().sort((a, b) => b.selectedIndex - a.selectedIndex);
-  }
-
-  private removeLetterFromArray(copyOfLetterValues: any[] & string[], randomLetter: string) {
-    const index = copyOfLetterValues.indexOf(randomLetter, 0);
-    if (index > -1) {
-      copyOfLetterValues.splice(index, 1);
-    }
-  }
-
-  private randomLetter(copyOfLetterValues: BoggleLetter[]): string {
-    return copyOfLetterValues[Math.floor(Math.random() * copyOfLetterValues.length)].value;
+  private getSortedBySelectedIndex() {
+    const copy: BoggleLetter[] = Object.assign([], this.gameService.boardBag);
+    return copy.sort((a, b) => b.selectedIndex - a.selectedIndex);
   }
 }

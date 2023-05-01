@@ -1,24 +1,24 @@
 <section>
-  <div class="d-flex align-items-center">
-    <div class="container p-4">
-      <div class="row border-bottom">
-        <div class="col-4 border-end">
-          <app-score></app-score>
+    <div class="d-flex align-items-center">
+        <div class="container p-4">
+            <div class="row border-bottom">
+                <div class="col-2 p-2 border-end">
+                    <app-score></app-score>
+                </div>
+                <div class="col p-2">
+                    <app-inventory></app-inventory>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2 border-end p-2">
+                    <!--          <app-score-board *ngIf="gameService.guessedWords.length > 0"></app-score-board>-->
+                </div>
+                <div class="col p-2">
+                    <app-board></app-board>
+                </div>
+            </div>
         </div>
-        <div class="col p-2">
-          <app-inventory></app-inventory>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-4 border-end p-2 d-none d-md-block">
-          <app-score-board *ngIf="gameService.guessedWords.length > 0"></app-score-board>
-        </div>
-        <div class="col p-2">
-          <app-board></app-board>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <router-outlet></router-outlet>
