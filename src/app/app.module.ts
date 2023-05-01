@@ -1,16 +1,30 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {BoardComponent} from './board/board.component';
+import {HttpClientModule} from "@angular/common/http";
+import {GoalsComponent} from './goals/goals.component';
+import {ScoreComponent} from './score/score.component';
+import {InventoryComponent} from './inventory/inventory.component';
+import {ModalModule} from "ngx-bootstrap/modal";
+import {NgCircleProgressModule} from "ng-circle-progress";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BoardComponent,
+    GoalsComponent,
+    ScoreComponent,
+    InventoryComponent
   ],
   imports: [
+    ModalModule.forRoot(),
+    NgCircleProgressModule.forRoot(),
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

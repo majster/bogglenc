@@ -1,0 +1,72 @@
+<div class="d-flex ps-2">
+<!--    <div (click)="actionOpenInventoryModal(lettersBag)"-->
+<!--         class="btn btn-outline-secondary rounded-5 p-2 position-relative me-4"-->
+<!--         style="font-size: 1.25rem; width: 48px; height: 48px;">-->
+<!--        <i class="bi bi-bag position-absolute" style="top: 7px; left: 13px"></i>-->
+<!--    </div>-->
+
+    <div (click)="actionOpenInventoryModal(hourGlass)"
+         class="btn btn-outline-light rounded-5 position-relative me-4"
+         style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
+        <circle-progress
+                [animation]="false"
+                [innerStrokeWidth]="0"
+                [outerStrokeColor]="'#0d6efd'"
+                [outerStrokeWidth]="5"
+                [percent]="gameService.gameState.timeProgress"
+                [radius]="25"
+                [subtitle]="''"
+                [title]="''"
+                [units]="''"
+                class="position-absolute"
+                style="top: -12px;left: -12px;"
+        ></circle-progress>
+        <i class="bi bi-hourglass position-absolute" style="top: 7px; left: 13px"></i>
+    </div>
+
+    <div (click)="actionOpenInventoryModal(goals)"
+         class="btn btn-outline-light rounded-5 position-relative me-4"
+         style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
+        <circle-progress
+                [animation]="false"
+                [innerStrokeWidth]="0"
+                [outerStrokeColor]="'#FFD700'"
+                [outerStrokeWidth]="5"
+                [percent]="gameService.goalProgress"
+                [radius]="25"
+                [subtitle]="''"
+                [title]="''"
+                [units]="''"
+                class="position-absolute"
+                style="top: -12px;left: -12px;"
+        ></circle-progress>
+        <i class="bi bi-trophy position-absolute"
+           [class.bi-trophy]="gameService.goalProgress < 100"
+           [class.bi-trophy-fill]="gameService.goalProgress >= 100"
+           style="top: 7px; left: 13px; {{gameService.goalProgress >= 100 ? 'color: #FFD700' : ''}}"></i>
+    </div>
+</div>
+
+<ng-template #hourGlass>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-hourglass"></i> Časovna omejitev</h4>
+        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-info">Ko se čas izteče je konec igre.</div>
+    </div>
+</ng-template>
+
+<ng-template #goals>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-trophy"></i> Cilji</h4>
+        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <app-goals></app-goals>
+    </div>
+</ng-template>

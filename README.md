@@ -1,27 +1,42 @@
 # Bogglenc
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.5.
+Igra iskanja besed na 4x4 mreži črk (varianta igre [boggle](https://en.wikipedia.org/wiki/Boggle)).
 
-## Development server
+**Igra**
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+[https://boggelnc.web.app/](https://boggelnc.web.app/)
 
-## Code scaffolding
+## Za začetek
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Za poganjanje projekta je potreben NodeJs.
 
-## Build
+**Zagon grafičnega vmesnika**
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```shell
+ng serve --watch --live-reload
+```
 
-## Running unit tests
+**Zagon zalednih storitev**
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```shell
+firebase emulators:start
+```
 
-## Running end-to-end tests
+## Navodila za uporabo
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Objava sprememb na firebase
 
-## Further help
+```shell
+firebase deploy
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Tehnični detaili
+
+### Fran.si
+
+Igra preverja besede na portal [fran.si](https://fran.si). Pogosto množine samostalnikov tam ne najde (npr. garaže, čevlji, perice,...).
+
+---
+
+## ☕ Časti avtorja [kafe](https://www.buymeacoffee.com/janmaseljL)
+ 
