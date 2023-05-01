@@ -1,0 +1,39 @@
+<div>
+
+  <div class="">
+    <div class="board">
+      <div *ngFor="let row of board; let rowIndex = index" class="d-flex justify-content-around">
+        <!--    <app-cell *ngFor="let cell of row; let colIndex = index"-->
+        <!--    [letter]="cell.letter"-->
+        <!--    (selectedEvent)="selectCell(0,0)"></app-cell>-->
+        <button (click)="selectCell(rowIndex, colIndex)" *ngFor="let cell of row; let colIndex = index"
+                [class.last-letter]="isCellLastSelected(cell)"
+                [class.selected]="cell.selected"
+                class="btn btn-outline-secondary cell rounded-2 shadow-sm">
+          {{ cell.letter }}
+        </button>
+      </div>
+      <div class="card border-1 border mt-3" style="margin-left: 10px; margin-right: 10px; font-size: 1.25rem;">
+        <div class="card-body">
+          <div *ngIf="currentWord" class="d-flex justify-content-between">
+            <button (click)="restCurrentWord()"  class="btn btn-outline-secondary rounded-1 ps-3 pe-3">🗑</button>
+            <div>{{currentWord}}</div>
+            <button (click)="submit()" class="btn btn-outline-primary rounded-1 ps-3 pe-3">🚀</button>
+          </div>
+          <div *ngIf="!currentWord" class="text-muted text-center">Izberi besedo</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!--    <div class="input-group mt-3">-->
+    <!--      <input [value]="currentWord" aria-describedby="button-addon2" aria-label="Izbrana beseda" class="form-control"-->
+    <!--             disabled-->
+    <!--             placeholder="Izbrana beseda"-->
+    <!--             type="text">-->
+    <!--      <button (click)="submit()" class="btn btn-primary" id="button-addon2" type="button">Preveri</button>-->
+    <!--    </div>-->
+    <!--    <div *ngIf="wordInvalid" class="text-danger">Ne valja =)</div>-->
+  </div>
+
+</div>

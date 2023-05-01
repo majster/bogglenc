@@ -1,0 +1,27 @@
+<div class="h-100">
+  <div class="">
+    <ul class="list-group list-group-flush">
+      <li *ngFor="let lengthEntry of wordLengthAchievementCountMap | keyvalue; let last = last"
+          [class.bg-transparent]="getAchievementProgress($any(lengthEntry.key)) > wordLengthAchievementCountMap[$any(lengthEntry.key)]"
+          class="list-group-item d-flex justify-content-between">
+        <div class="" style="{{last ? 'margin-right: -10px;' :''}}">{{lengthEntry.key}}{{last ? '+' : ''}}</div>
+        <div class="d-flex">
+          <ng-container
+            *ngTemplateOutlet="lengthCounter; context: {wordLength: lengthEntry.key}"></ng-container>
+        </div>
+        <div style="width: 20px">{{getAchievementProgress($any(lengthEntry.key)) > wordLengthAchievementCountMap[$any(lengthEntry.key)] ? '👑' : ''}}</div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<ng-template #lengthCounter let-wordLength="wordLength">
+  <div
+    *ngFor="let _ of [].constructor(wordLengthAchievementCountMap[$any(wordLength)]); let last = last; let index = index;"
+    class="border p-1 me-1">
+    <div style="height: 14px; width: 14px"
+    class="rounded-1 position-relative">
+      <span *ngIf="getAchievementProgress(wordLength) > index" class="position-absolute" style="top: -6px; left: -3px">⭐</span>
+    </div>
+  </div>
+</ng-template>

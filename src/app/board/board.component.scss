@@ -1,0 +1,26 @@
+.board{
+  width: 400px;
+}
+
+.cell {
+  //background: #FFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 80px;
+  min-height: 80px;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 5px;
+  cursor: pointer;
+  user-select: none;
+  color: black;
+}
+
+.cell.selected {
+  background-color: #dfdfdf;
+}
+.cell.last-letter {
+  background-color: var(--bs-primary);
+  color: white;
+}
