@@ -16,7 +16,7 @@
                         <ng-container
                                 *ngTemplateOutlet="lengthCounter; context: {wordLength: lengthEntry.key}"></ng-container>
                     </div>
-                    <i *ngIf="getAchievementProgress($any(lengthEntry.key)) >= gameService.goalsByLength[$any(lengthEntry.key)] "
+                    <i *ngIf="gameService.getGuessedWordsByLength($any(lengthEntry.key)).length >= gameService.goalsByLength[$any(lengthEntry.key)] "
                        class="bi bi-trophy-fill"
                        style="color: #FFD700"></i>
                 </div>
@@ -38,9 +38,9 @@
     <div
             *ngFor="let _ of [].constructor(gameService.goalsByLength[$any(wordLength)]); let last = last; let index = index;"
             class="me-1">
-        <i *ngIf="getAchievementProgress(wordLength) > index" class="bi bi-star-fill"
+        <i *ngIf="gameService.getGuessedWordsByLength(wordLength).length > index" class="bi bi-star-fill"
            style="color: #FFD700"></i>
-        <i *ngIf="!(getAchievementProgress(wordLength) > index)"
+        <i *ngIf="!(gameService.getGuessedWordsByLength(wordLength).length > index)"
            class="bi bi-star text-muted"></i>
     </div>
 </ng-template>

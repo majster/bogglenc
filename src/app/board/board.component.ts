@@ -17,10 +17,9 @@ export class BoardComponent {
     constructor(private httpClient: HttpClient, public gameService: GameService) {
 
     }
-
-    selectCell(index: number) {
+    selectCell(row: number, index: number) {
         this.wordInvalid = false
-        let cell = this.gameService.boardBag[index];
+        let cell = this.gameService.gameState.lettersBag[row][index];
         let sortedBySelectedIndex = this.getSortedBySelectedIndex();
         if (cell.selected && cell === sortedBySelectedIndex[0]) {
             // unselect
@@ -58,7 +57,6 @@ export class BoardComponent {
     }
 
     isCellLastSelected(cell: BoggleLetter) {
-
         if (!cell.selected) {
             return false;
         }
@@ -69,7 +67,9 @@ export class BoardComponent {
     submit() {
         // this.wordCorrect();
         // this.wordInvalid = true;
-        this.httpClient.get(`https://europe-west1-boggelnc.cloudfunctions.net/wordCheck?word=${this.currentWord}`, {responseType: "text"})
+        const hostLocal = 'http://127.0.0.1:5001/boggelnc/europe-west1/wordCheck'
+        const hostGlobal = 'https://europe-west1-boggelnc.cloudfunctions.net/wordCheck'
+        this.httpClient.get(`${hostGlobal}?word=${this.currentWord}`, {responseType: "text"})
             .subscribe(value => {
                 if (value === this.currentWord) {
                     this.wordCorrect();

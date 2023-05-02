@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {BsModalService} from "ngx-bootstrap/modal";
+import {Component, OnInit, TemplateRef} from '@angular/core';
+import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 import {GameService} from "./game.service";
 
 @Component({
@@ -8,6 +8,8 @@ import {GameService} from "./game.service";
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+
+    modalRef?: BsModalRef;
 
     gameOver = false
     gameWon = false;
@@ -72,7 +74,12 @@ export class AppComponent implements OnInit {
         this.timeout = setTimeout(() => this.victoryConfetti(), randomNumberInMilliseconds);
     }
 
-    newGame() {
+    newGameModal(template: TemplateRef<any>) {
+        this.modalRef = this.modalService.show(template)
+    }
+
+    actionConfirmNewGame() {
+        this.modalRef?.hide();
         clearTimeout(this.timeout);
         this.gameOver = false
         this.gameWon = false;

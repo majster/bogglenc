@@ -1,4 +1,4 @@
-$board-grid-dimensions: 30rem;
+$board-grid-dimensions: 22rem;
 .board-grid {
   height: $board-grid-dimensions;
   width: $board-grid-dimensions;
@@ -7,7 +7,7 @@ $board-grid-dimensions: 30rem;
   flex-direction: row;
 }
 
-$board-cell-dimensions: 6.5rem;
+$board-cell-dimensions: 4.4rem;
 $board-cell-margin-right: 1rem;
 .board-cell {
   height: $board-cell-dimensions;
@@ -33,17 +33,44 @@ $board-cell-margin-right: 1rem;
     }
   }
 
-  .board-cell-value {
-    top: 0;
-    right: -15px;
-    font-size: 0.825rem;
-  }
+
 }
 
 .board {
   width: $board-grid-dimensions;
 }
 
-.commands {
-  margin-right: $board-cell-margin-right;
+.cell {
+
+  height: 65px;
+  width: 65px;
+  font-size: 2rem;
+  line-height: 1;
+  border-width: 3px;
+
+  .card-body {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &.selected {
+    background-color: #dfdfdf;
+  }
+
+  &.last-letter {
+    background-color: var(--bs-primary);
+    color: white;
+
+    .board-cell-value {
+      color: white !important;
+    }
+  }
+  .board-cell-value {
+    top: 2px;
+    right: 2px;
+    font-size: 0.825rem;
+  }
+
 }

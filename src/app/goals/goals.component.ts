@@ -1,28 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {GameService} from "../game.service";
 
 @Component({
-  selector: 'app-goals',
-  templateUrl: './goals.component.html',
-  styleUrls: ['./goals.component.scss']
+    selector: 'app-goals',
+    templateUrl: './goals.component.html',
+    styleUrls: ['./goals.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GoalsComponent implements OnInit {
 
 
-  byLengthExpandedMap = {} as any;
+    byLengthExpandedMap = {} as any;
 
-  constructor(public gameService: GameService) { }
+    constructor(public gameService: GameService) {
+    }
 
-  ngOnInit(): void {
-  }
+    ngOnInit(): void {
+    }
 
-  getAchievementProgress(wordLength: string): number{
-    return this.gameService.guessedWords.filter(value => {
-      return value.length.toString() === wordLength
-    }).length;
-  }
-
-  byLengthExpanded(key: string) {
-
-  }
 }

@@ -12,3 +12,8 @@ Local firebase emulator:
 firebase emulators:start
 ```
 
+# How to
+## Deploy hosting
+```shell
+firebase deploy
+```

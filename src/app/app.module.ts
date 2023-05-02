@@ -3,9 +3,7 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {GameComponent} from './game/game.component';
 import {BoardComponent} from './board/board.component';
-import {CellComponent} from './cell/cell.component';
 import {HttpClientModule} from "@angular/common/http";
 import {GoalsComponent} from './goals/goals.component';
 import {ScoreComponent} from './score/score.component';
@@ -16,9 +14,7 @@ import {NgCircleProgressModule} from "ng-circle-progress";
 @NgModule({
   declarations: [
     AppComponent,
-    GameComponent,
     BoardComponent,
-    CellComponent,
     GoalsComponent,
     ScoreComponent,
     InventoryComponent
