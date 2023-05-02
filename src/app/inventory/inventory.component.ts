@@ -9,9 +9,8 @@ import {GameService} from "../game.service";
 })
 export class InventoryComponent implements OnInit, AfterViewInit {
     modalRef?: BsModalRef;
-    @ViewChild("levelUp")
-    lettersBag!: TemplateRef<any>;
-    selectedUpgrade!: string;
+    @ViewChild("goals")
+    templateRef!: TemplateRef<any>;
 
     constructor(private modalService: BsModalService, public gameService: GameService) {
     }
@@ -25,18 +24,6 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        // this.actionOpenInventoryModal(this.lettersBag);
-    }
-
-    selectUpgrade(commonLetter: string) {
-        this.selectedUpgrade = commonLetter;
-    }
-
-    confirmUpgrade() {
-        this.gameService.unAppliedLevelUps[0].applied = true;
-        this.gameService.addUpgrade(this.selectedUpgrade);
-
-        this.selectedUpgrade = '';
-        this.modalRef?.hide();
+        // this.actionOpenInventoryModal(this.templateRef);
     }
 }

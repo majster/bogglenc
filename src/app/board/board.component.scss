@@ -18,7 +18,7 @@ $board-cell-margin-right: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 3rem;
+  font-size: 2rem;
 
   &.selected {
     background-color: #dfdfdf;
@@ -27,6 +27,16 @@ $board-cell-margin-right: 1rem;
   &.last-letter {
     background-color: var(--bs-primary);
     color: white;
+
+    .board-cell-value {
+      color: white !important;
+    }
+  }
+
+  .board-cell-value {
+    top: 0;
+    right: -15px;
+    font-size: 0.825rem;
   }
 }
 

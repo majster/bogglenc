@@ -7,7 +7,7 @@ import {GameComponent} from './game/game.component';
 import {BoardComponent} from './board/board.component';
 import {CellComponent} from './cell/cell.component';
 import {HttpClientModule} from "@angular/common/http";
-import {ScoreBoardComponent} from './score-board/score-board.component';
+import {GoalsComponent} from './goals/goals.component';
 import {ScoreComponent} from './score/score.component';
 import {InventoryComponent} from './inventory/inventory.component';
 import {ModalModule} from "ngx-bootstrap/modal";
@@ -19,7 +19,7 @@ import {NgCircleProgressModule} from "ng-circle-progress";
     GameComponent,
     BoardComponent,
     CellComponent,
-    ScoreBoardComponent,
+    GoalsComponent,
     ScoreComponent,
     InventoryComponent
   ],

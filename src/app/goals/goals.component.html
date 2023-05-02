@@ -1,0 +1,46 @@
+<div class="h-100">
+    <div class="">
+        <ul class="list-group list-group-flush">
+            <li *ngFor="let lengthEntry of gameService.goalsByLength | keyvalue; let last = last"
+                class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <div class="col-1">{{lengthEntry.key}}{{last ? '+' : ''}}</div>
+                    <div class="col-1">
+                        <button (click)="byLengthExpandedMap[$any(lengthEntry.key)] = !byLengthExpandedMap[$any(lengthEntry.key)]"
+                                *ngIf="gameService.getGuessedWordsByLength($any(lengthEntry.key)).length > 0"
+                                class="rounded-5 border">
+                            <i class="bi bi-chevron-expand"></i>
+                        </button>
+                    </div>
+                    <div class="col d-flex">
+                        <ng-container
+                                *ngTemplateOutlet="lengthCounter; context: {wordLength: lengthEntry.key}"></ng-container>
+                    </div>
+                    <i *ngIf="getAchievementProgress($any(lengthEntry.key)) >= gameService.goalsByLength[$any(lengthEntry.key)] "
+                       class="bi bi-trophy-fill"
+                       style="color: #FFD700"></i>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div class="col-2"></div>
+                    <div *ngIf="byLengthExpandedMap[$any(lengthEntry.key)]" class="bg-light p-2 col d-flex">
+                        <div *ngFor="let word of gameService.getGuessedWordsByLength($any(lengthEntry.key))"
+                             class="card p-1 ms-1">
+                            {{word}}
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<ng-template #lengthCounter let-wordLength="wordLength">
+    <div
+            *ngFor="let _ of [].constructor(gameService.goalsByLength[$any(wordLength)]); let last = last; let index = index;"
+            class="me-1">
+        <i *ngIf="getAchievementProgress(wordLength) > index" class="bi bi-star-fill"
+           style="color: #FFD700"></i>
+        <i *ngIf="!(getAchievementProgress(wordLength) > index)"
+           class="bi bi-star text-muted"></i>
+    </div>
+</ng-template>

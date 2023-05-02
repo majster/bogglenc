@@ -29,7 +29,7 @@ const cors = require('cors')({
  * This endpoint supports CORS.
  */
 // [START trigger]
-exports.wordCheck = functions.https.onRequest((req, res) => {
+exports.wordCheck = functions.region('europe-west1').https.onRequest((req, res) => {
   // [END trigger]
   // [START sendError]
   // Forbidding PUT requests.

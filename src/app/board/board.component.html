@@ -5,7 +5,8 @@
                 [class.last-letter]="isCellLastSelected(gameCell)"
                 [class.selected]="gameCell.selected"
                 class="btn board-cell card shadow-sm">
-            <div class="card-body">
+            <div class="card-body position-relative">
+                <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameCell.value]}}</span>
                 {{ gameCell.value }}
             </div>
         </button>

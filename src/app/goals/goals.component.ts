@@ -2,20 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {GameService} from "../game.service";
 
 @Component({
-  selector: 'app-score-board',
-  templateUrl: './score-board.component.html',
-  styleUrls: ['./score-board.component.scss']
+  selector: 'app-goals',
+  templateUrl: './goals.component.html',
+  styleUrls: ['./goals.component.scss']
 })
-export class ScoreBoardComponent implements OnInit {
+export class GoalsComponent implements OnInit {
 
-  wordLengthAchievementCountMap = {
-    "8": 2,
-    "7": 3,
-    "6": 5,
-    "5": 6,
-    "4": 7,
-    "3": 8
-  } as any
+
+  byLengthExpandedMap = {} as any;
 
   constructor(public gameService: GameService) { }
 
@@ -28,4 +22,7 @@ export class ScoreBoardComponent implements OnInit {
     }).length;
   }
 
+  byLengthExpanded(key: string) {
+
+  }
 }

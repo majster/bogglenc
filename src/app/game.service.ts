@@ -1,23 +1,10 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
-
-export enum BoggleLetterState {
-    ON_BOARD = "ON_BOARD", DISCARDED = "DISCARDED", UPCOMONG = "UPCOMONG"
-}
-
-export interface BoggleLevelUp {
-    powerUp: string;
-    commonLetter: string;
-    unCommonLetter: string;
-    applied: boolean
-    appliedType: string | undefined
-}
+import {Subject} from "rxjs";
 
 export interface BoggleLetter {
     value: string
     selected: boolean
     selectedIndex: number
-    state: BoggleLetterState
     boardIndex?: number | undefined
 }
 
@@ -27,7 +14,6 @@ export interface BoggleLetter {
 export class GameService {
 
     public static BOARD_SIZE = 16;
-    public static BAG_INITIAL_SIZE = 20;
     public static LOCAL_STORAGE_GAME_STATE = 'gameState';
 
     letterValues: { [key: string]: number } = {
@@ -58,17 +44,25 @@ export class GameService {
         'ž': 10,
     };
 
-    gameState!: {
-        score: number;
-        guessedWords: string[];
-        lettersBag: BoggleLetter[];
-        level: number;
-        levelUps: BoggleLevelUp[]
-        appliedLevelUps: number;
+    goalsByLength: { [key: string]: number } = {
+        "8": 2,
+        "7": 3,
+        "6": 5,
+        "5": 6,
+        "4": 7,
+        "3": 8
     }
 
-    $timeProgressSubject = new BehaviorSubject<number>(0);
-    timeProgress: number = 0;
+
+    gameState!: {
+        score: number;
+        goalProgress: number;
+        guessedWords: string[];
+        lettersBag: BoggleLetter[];
+        timeProgress: number;
+    }
+
+    $gameStateSubject = new Subject<any>();
     private timerInterval: any;
 
     constructor() {
@@ -80,28 +74,25 @@ export class GameService {
 
     set score(value: number) {
         this.gameState.score = value;
+        this.stateChanged();
     }
 
     get guessedWords() {
         return this.gameState.guessedWords;
     }
 
-
-    get discardedLetters() {
-        return this.gameState.lettersBag.filter(letter => letter.state === BoggleLetterState.DISCARDED);
+    get goalProgress(): number {
+        return this.gameState.goalProgress;
     }
 
-    get upcomingLetters() {
-        return this.gameState.lettersBag.filter(letter => letter.state === BoggleLetterState.UPCOMONG);
+    set goalProgress(value: number) {
+        this.gameState.goalProgress = value;
+        this.stateChanged();
     }
 
-    get selectedLetters() {
-        return this.gameState.lettersBag.filter(letter => letter.selected && letter.state === BoggleLetterState.ON_BOARD);
-    }
 
     get boardBag() {
         return this.gameState.lettersBag
-            .filter(letter => letter.state === BoggleLetterState.ON_BOARD)
             .sort((a, b) => (a.boardIndex as any) - (b.boardIndex as any));
     }
 
@@ -123,64 +114,81 @@ export class GameService {
         return this.getCopyOfArray(Object.keys(this.letterValues));
     }
 
-    get unAppliedLevelUps(): BoggleLevelUp[] {
-        return this.gameState.levelUps.filter(value => !value.applied)
+    get timeProgress(): number {
+        return this.gameState.timeProgress;
     }
 
-    get appliedLevelUps(): BoggleLevelUp[] {
-        return this.gameState.levelUps.filter(value => value.applied)
+    set timeProgress(value: number) {
+        this.gameState.timeProgress = value;
+        this.stateChanged();
+    }
+
+    get selectedLetters() {
+        return this.gameState.lettersBag.filter(letter => letter.selected);
+    }
+
+    addGuessedWord(word: string) {
+        this.gameState.guessedWords.push(word);
+        this.stateChanged(true);
+    }
+
+    getGuessedWordsByLength(length: string) {
+        const lengthAsNum = parseInt(length);
+        return this.gameState.guessedWords.filter(word => {
+            if (lengthAsNum < 8) {
+                return word.length === lengthAsNum
+            } else {
+                return word.length >= lengthAsNum
+            }
+        })
+    }
+
+    calculateGoalProgress() {
+
+        let full = 0;
+        let progress = 0;
+        Object.keys(this.goalsByLength).forEach(wordLength => {
+            const guessedWordsByLength = this.getGuessedWordsByLength(wordLength);
+            const value = this.goalsByLength[wordLength];
+            full += value;
+            if (guessedWordsByLength.length > value) {
+                progress += value;
+            } else {
+                progress += guessedWordsByLength.length;
+            }
+        })
+
+        this.goalProgress = Math.ceil((progress / full) * 100);
     }
 
     replaceSelectedCells() {
-
         const selected = this.selectedLetters;
-        const boardIndexesToReplace = selected.map(letter => letter.boardIndex);
 
-        selected.forEach(letter => {
-            letter.state = BoggleLetterState.DISCARDED;
+        const randomLetters: string[] = [];
+        for (let i = 0; i < selected.length; i++) {
+
+            let randomLetter!: string;
+            while (!randomLetter ||
+            (randomLetters.includes(randomLetter)
+                && randomLetters.filter(value => value === randomLetter).length > 1
+                && this.boardBag.filter(boggleLetter => boggleLetter.value === randomLetter).length > 1)) {
+                randomLetter = this.getRandomLetter2();
+            }
+
+            randomLetters.push(randomLetter)
+        }
+
+
+        selected.forEach((letter, index) => {
             letter.selected = false;
             letter.selectedIndex = 0;
             letter.boardIndex = undefined;
+            letter.value = randomLetters[index];
         });
-
-        let upcoming = this.upcomingLetters;
-
-        if (boardIndexesToReplace.length > upcoming.length) {
-
-            this.discardedLetters.forEach(letter => {
-                letter.state = BoggleLetterState.UPCOMONG
-            })
-
-            upcoming = this.upcomingLetters;
-        }
-
-        const upcomingShuffled = upcoming.sort(() => 0.5 - Math.random());
-        boardIndexesToReplace.forEach((boardIndex, index) => {
-            const randomArrayEntry: BoggleLetter = upcoming[index];
-            // put on board a random letter
-            randomArrayEntry.boardIndex = boardIndex;
-            randomArrayEntry.state = BoggleLetterState.ON_BOARD
-        })
     }
 
     getCopyOfArray(arr: any[]): any[] {
         return Object.assign([], arr);
-    }
-
-    getLettersLevelOneBag(): BoggleLetter[] {
-        const levelOneLetters = this.commonLetters;
-        const levelOneBagLetters: BoggleLetter[] = [];
-        for (let i = 0; i < GameService.BAG_INITIAL_SIZE; i++) {
-            const randomLetter = this.randomArrayEntry(levelOneLetters);
-            levelOneBagLetters.push({
-                value: randomLetter,
-                state: BoggleLetterState.UPCOMONG,
-                selected: false,
-                selectedIndex: 0,
-            });
-        }
-
-        return levelOneBagLetters;
     }
 
     setupGame() {
@@ -188,43 +196,59 @@ export class GameService {
         const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_STATE);
         if (existingGameState) {
             this.gameState = JSON.parse(existingGameState);
-            this.createTimer();
+            this.resumeTimer();
         } else {
             this.createNewGame();
         }
     }
 
-    generateBoardBag(lettersBag: BoggleLetter[]): BoggleLetter[] {
-
-        // put random number of letters on board
-        const shuffled = lettersBag.sort(() => 0.5 - Math.random());
-        const boardBag: BoggleLetter[] = [];
-
-        for (let i = 0; i < GameService.BOARD_SIZE; i++) {
-            (shuffled[i] as BoggleLetter).boardIndex = i;
-            (shuffled[i] as BoggleLetter).state = BoggleLetterState.ON_BOARD;
-        }
-
-        return boardBag;
+    getRandomLetter2() {
+        const rndInteger = this.getRandomLetterValue();
+        const pairs = Object.entries(this.letterValues);
+        this.shuffleArray(pairs);
+        const filter = pairs.filter(pair => {
+            return pair[1] - rndInteger === 0;
+        });
+        return filter[0][0];
     }
 
     createNewGame() {
-        const playerLettersBag = this.getLettersLevelOneBag();
-        this.generateBoardBag(playerLettersBag);
+
+        const randomLetters: string[] = [];
+        for (let i = 0; i < GameService.BOARD_SIZE; i++) {
+
+            let randomLetter!: string;
+            while (!randomLetter || (randomLetters.includes(randomLetter) && randomLetters.filter(value => value === randomLetter).length > 1)) {
+                randomLetter = this.getRandomLetter2();
+            }
+
+            randomLetters.push(randomLetter)
+        }
+
+        const playerLettersBag = randomLetters.map((value, index) => {
+            return {
+                value: value,
+                selected: false,
+                selectedIndex: 0,
+                boardIndex: index
+            } as BoggleLetter
+        })
+
+        // const playerLettersBag = this.getRandomLettersArray(GameService.BOARD_SIZE);
+
         this.gameState = {
             score: 0,
+            goalProgress: 0,
             lettersBag: playerLettersBag,
             guessedWords: [],
-            level: 0,
-            levelUps: [],
-            appliedLevelUps: 0
+            timeProgress: 0
         }
         this.persistState();
         this.createTimer();
     }
 
     createTimer() {
-        this.timeProgress = 0;
+        this.gameState.timeProgress = 0;
         this.pauseTimer()
         this.resumeTimer();
     }
@@ -236,42 +260,51 @@ export class GameService {
     resumeTimer() {
         this.timerInterval = setInterval(() => {
             this.timeProgress += 1;
-            this.$timeProgressSubject.next(this.timeProgress);
         }, 1000)
     }
 
-    levelUp() {
-        this.gameState.level = Math.floor(this.gameState.score / 10);
-
-        if (this.appliedLevelUps.length < this.gameState.level) {
-            this.gameState.levelUps.push({
-                commonLetter: this.randomArrayEntry(this.commonLetters),
-                unCommonLetter: this.randomArrayEntry(this.unCommonLetters),
-                powerUp: '',
-                applied: false,
-                appliedType: undefined
-            })
-
-            this.persistState();
-        }
+    stateChanged(wordGuess?: boolean) {
+        this.$gameStateSubject.next(wordGuess);
+        this.persistState();
     }
 
-    addUpgrade(selectedUpgrade: string) {
-        this.gameState.lettersBag.push({
-            state: BoggleLetterState.UPCOMONG,
-            selected: false,
-            value: selectedUpgrade,
-            selectedIndex: 0
-        })
+    private getRandomLetterValue(): number {
+        let rndInteger: number | undefined;
 
-        this.persistState();
+        while (rndInteger === undefined || [6, 8, 9].includes(rndInteger)) {
+            const rnd = Math.random();
+            if (rnd < 0.5) {
+                rndInteger = 1;
+            } else if (rnd < 0.6) {
+                rndInteger = 2;
+            } else if (rnd < 0.7) {
+                rndInteger = 3;
+            } else if (rnd < 0.8) {
+                rndInteger = 4;
+            } else if (rnd < 0.85) {
+                rndInteger = 5;
+            } else if (rnd < 0.95) {
+                rndInteger = 7;
+            } else {
+                rndInteger = 10;
+            }
+        }
+
+        return rndInteger;
     }
 
     private persistState() {
         localStorage.setItem(GameService.LOCAL_STORAGE_GAME_STATE, JSON.stringify(this.gameState));
     }
 
-    private randomArrayEntry(arr: any[]): any {
-        return arr[Math.floor(Math.random() * arr.length)];
+    private getRndInteger(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    private shuffleArray(array: any[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 }

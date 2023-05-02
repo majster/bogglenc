@@ -8,13 +8,20 @@
                 <div class="col p-2">
                     <app-inventory></app-inventory>
                 </div>
+                <div class="col-4 p-2">
+                    <button (click)="newGame()" class="btn btn-outline-secondary ms-auto">
+                        <i class="bi bi-dice-5-fill"></i>
+                        Nova Igra
+                    </button>
+                </div>
             </div>
             <div class="row">
-                <div class="col-2 border-end p-2">
-                    <!--          <app-score-board *ngIf="gameService.guessedWords.length > 0"></app-score-board>-->
-                </div>
-                <div class="col p-2">
-                    <app-board></app-board>
+                <div class="col p-5">
+                    <app-board *ngIf="!gameWon && !gameOver"
+                               class="d-flex justify-content-center"></app-board>
+                    <h1 *ngIf="gameOver" class="text-center">Konec igre.</h1>
+                    <h1 *ngIf="gameWon" class="text-center">Čestitke!</h1>
+                    <app-goals *ngIf="gameWon"></app-goals>
                 </div>
             </div>
         </div>
