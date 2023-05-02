@@ -1,12 +1,14 @@
-<div class="board">
+<div class="row">
+
+    <div class="col-sm-12 col-md-8 offset-md-2 col-xl-4 offset-xl-4">
     <div class="row mb-3" *ngFor="let row of [0,1,2,3]">
-        <div class="col d-flex justify-content-center" *ngFor="let cell of [0,1,2,3]">
+        <div class="col" *ngFor="let cell of [0,1,2,3]">
             <button (click)="selectCell(row , cell)"
-                    [class.last-letter]="isCellLastSelected(gameService.gameState.lettersBag[row][cell])"
+                    [class.last-letter]="lastSelectedIndex > 0 && gameService.gameState.lettersBag[row][cell].selectedIndex === lastSelectedIndex"
                     [class.selected]="gameService.gameState.lettersBag[row][cell].selected"
                     class="btn cell w-100 card shadow-sm position-relative">
                 <div class="card-body w-100">
-                    <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameService.gameState.lettersBag[row][cell].value]}}</span>
+<!--                    <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameService.gameState.lettersBag[row][cell].value]}}</span>-->
                     {{ gameService.gameState.lettersBag[row][cell].value }}
                 </div>
             </button>
@@ -47,4 +49,6 @@
 
         <div *ngIf="wordInvalid" class="alert alert-danger mt-2 text-center text-danger">Neznana beseda</div>
     </div>
+    </div>
+
 </div>

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BoggleLetter, GameService} from "../game.service";
-
+import {GameService} from "../game.service";
+import {environment} from '../../environments/environment';
 
 @Component({
     selector: 'app-board',
@@ -12,20 +12,31 @@ export class BoardComponent {
 
     currentWord: string = '';
     wordInvalid = false;
-    protected readonly indexedDB = indexedDB;
+    lastSelectedIndex = 0
 
     constructor(private httpClient: HttpClient, public gameService: GameService) {
+        const boggleLettersBySelectedIndex = this.gameService.boardBag.sort((a, b) => b.selectedIndex - a.selectedIndex);
 
+        let currentWordInReverse = '';
+        boggleLettersBySelectedIndex.forEach(letter => {
+            if (letter.selectedIndex > 0) {
+                currentWordInReverse += letter.value;
+            }
+        })
+        this.currentWord = this.reverse(currentWordInReverse);
+        this.lastSelectedIndex = boggleLettersBySelectedIndex[0].selectedIndex;
     }
+
     selectCell(row: number, index: number) {
         this.wordInvalid = false
         let cell = this.gameService.gameState.lettersBag[row][index];
-        let sortedBySelectedIndex = this.getSortedBySelectedIndex();
-        if (cell.selected && cell === sortedBySelectedIndex[0]) {
+
+        if (cell.selected && cell.selectedIndex === this.lastSelectedIndex) {
             // unselect
             cell.selected = false;
             cell.selectedIndex = 0;
             this.currentWord = this.currentWord.substring(0, this.currentWord.length - 1);
+            this.lastSelectedIndex -= 1
             return;
         }
 
@@ -33,7 +44,7 @@ export class BoardComponent {
             return;
         }
 
-        cell.selectedIndex = sortedBySelectedIndex[0].selectedIndex + 1;
+        cell.selectedIndex = this.lastSelectedIndex += 1;
 
         // Get the selected letter
         const letter = cell.value;
@@ -43,6 +54,8 @@ export class BoardComponent {
 
         // Add the selected letter to the current word
         this.currentWord += letter;
+
+        this.gameService.stateChanged();
     }
 
     calculateScore(word: string): number {
@@ -56,20 +69,10 @@ export class BoardComponent {
         return score;
     }
 
-    isCellLastSelected(cell: BoggleLetter) {
-        if (!cell.selected) {
-            return false;
-        }
-        const sorted = this.getSortedBySelectedIndex();
-        return cell === sorted[0];
-    }
-
     submit() {
         // this.wordCorrect();
         // this.wordInvalid = true;
-        const hostLocal = 'http://127.0.0.1:5001/boggelnc/europe-west1/wordCheck'
-        const hostGlobal = 'https://europe-west1-boggelnc.cloudfunctions.net/wordCheck'
-        this.httpClient.get(`${hostGlobal}?word=${this.currentWord}`, {responseType: "text"})
+        this.httpClient.get(`${environment.wordCheckFunction}?word=${this.currentWord}`, {responseType: "text"})
             .subscribe(value => {
                 if (value === this.currentWord) {
                     this.wordCorrect();
@@ -79,13 +82,18 @@ export class BoardComponent {
             });
     }
 
-
     restCurrentWord() {
         this.currentWord = '';
         this.wordInvalid = false
         this.gameService.boardBag.forEach(value => {
             value.selected = false
+            value.selectedIndex = 0
         })
+        this.gameService.stateChanged();
+    }
+
+    private reverse(s: string) {
+        return s.split("").reverse().join("");
     }
 
     private wordCorrect() {
@@ -96,10 +104,5 @@ export class BoardComponent {
         this.gameService.replaceSelectedCells();
         this.gameService.calculateGoalProgress();
         this.gameService.createTimer();
-    }
-
-    private getSortedBySelectedIndex() {
-        const copy: BoggleLetter[] = Object.assign([], this.gameService.boardBag);
-        return copy.sort((a, b) => b.selectedIndex - a.selectedIndex);
     }
 }

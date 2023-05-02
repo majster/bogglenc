@@ -45,8 +45,8 @@ export class GameService {
     };
 
     goalsByLength: { [key: string]: number } = {
-        "8": 2,
-        "7": 3,
+        "8": 1,
+        "7": 1,
         "6": 5,
         "5": 6,
         "4": 7,

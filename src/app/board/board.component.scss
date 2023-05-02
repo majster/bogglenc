@@ -1,8 +1,11 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
 
 .cell {
 
+  width: 63px;
   height: 63px;
-
   font-size: 2rem;
   line-height: 1;
   border-width: 3px;

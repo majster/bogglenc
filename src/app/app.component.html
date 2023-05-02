@@ -14,8 +14,7 @@
             </div>
             <div class="row">
                 <div class="col p-2 pt-3">
-                    <app-board *ngIf="!gameWon && !gameOver"
-                               class="d-flex justify-content-center"></app-board>
+                    <app-board *ngIf="!gameWon && !gameOver"></app-board>
                     <h1 *ngIf="gameOver" class="text-center">
                         Konec igre.
                         <button (click)="actionConfirmNewGame()" class="btn btn-outline-secondary ms-auto">

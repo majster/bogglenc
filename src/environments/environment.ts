@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  wordCheckFunction: 'https://europe-west1-boggelnc.cloudfunctions.net/wordCheck'
+  wordCheckFunction: 'http://127.0.0.1:5001/boggelnc/europe-west1/wordCheck'
 };
 
 /*

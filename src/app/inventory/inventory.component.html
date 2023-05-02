@@ -45,52 +45,7 @@
            [class.bi-trophy-fill]="gameService.goalProgress >= 100"
            style="top: 7px; left: 13px; {{gameService.goalProgress >= 100 ? 'color: #FFD700' : ''}}"></i>
     </div>
-<!--    <div-->
-<!--            (click)="actionOpenInventoryModal(levelUp)"-->
-<!--            *ngIf="gameService.unAppliedLevelUps.length > 0"-->
-<!--            class="btn btn-success rounded-5 p-2 position-relative"-->
-<!--            style="font-size: 1.25rem; width: 48px; height: 48px;">-->
-<!--        <i class="bi  bi-chevron-double-up position-absolute" style="top: 7px; left: 13px"></i>-->
-<!--    </div>-->
 </div>
-
-<!--<ng-template #lettersBag>-->
-<!--    <div class="modal-header">-->
-<!--        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-bag"></i> Vreča Črk</h4>-->
-<!--        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">-->
-<!--            <span aria-hidden="true" class="visually-hidden">&times;</span>-->
-<!--        </button>-->
-<!--    </div>-->
-<!--    <div class="modal-body">-->
-<!--        <div class="alert alert-info">Seznam črk iz katerih se polni igralna površina.</div>-->
-
-<!--        <div class="card mb-2">-->
-<!--            <div class="card-header">Seznam razpoložljivih črk ({{gameService.upcomingLetters.length}})</div>-->
-<!--            <div class="card-body">-->
-<!--                <div class="d-flex flex-wrap bg-light p-1">-->
-<!--                    <div *ngFor="let boggleLetter of gameService.upcomingLetters"-->
-<!--                         class="shadow-sm bg-body border border-1 rounded-2 p-2 m-1 text-center"-->
-<!--                         style="min-width: 45px">-->
-<!--                        {{boggleLetter.value}}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="card">-->
-<!--            <div class="card-header">Seznam uporabljenih črk ({{gameService.discardedLetters.length}})</div>-->
-<!--            <div class="card-body">-->
-<!--                <div class="d-flex flex-wrap bg-light p-1">-->
-<!--                    <div *ngFor="let boggleLetter of gameService.discardedLetters"-->
-<!--                         class="shadow-sm bg-body border border-1 rounded-2 p-2 m-1 text-center"-->
-<!--                         style="min-width: 45px">-->
-<!--                        {{boggleLetter.value}}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</ng-template>-->
 
 <ng-template #hourGlass>
     <div class="modal-header">
@@ -115,55 +70,3 @@
         <app-goals></app-goals>
     </div>
 </ng-template>
-
-<!--<ng-template #levelUp>-->
-<!--    <div class="modal-header">-->
-<!--        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-chevron-double-up"></i> Nadgradnja</h4>-->
-<!--        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">-->
-<!--            <span aria-hidden="true" class="visually-hidden">&times;</span>-->
-<!--        </button>-->
-<!--    </div>-->
-<!--    <div class="modal-body" *ngIf="gameService.unAppliedLevelUps.length > 0">-->
-<!--        <div class="">-->
-<!--            <div class="d-flex justify-content-around">-->
-<!--                &lt;!&ndash;                <div class="">&ndash;&gt;-->
-<!--                &lt;!&ndash;                    <button class="card h-100">&ndash;&gt;-->
-<!--                &lt;!&ndash;                        <div class="card-header">Pomoč v sili</div>&ndash;&gt;-->
-<!--                &lt;!&ndash;                        <div class="card-body"></div>&ndash;&gt;-->
-<!--                &lt;!&ndash;                    </button>&ndash;&gt;-->
-<!--                &lt;!&ndash;                </div>&ndash;&gt;-->
-<!--                <div class="">-->
-<!--                    <button (click)="selectUpgrade(gameService.unAppliedLevelUps[0].commonLetter)"-->
-<!--                            [class.bg-primary]="selectedUpgrade === gameService.unAppliedLevelUps[0].commonLetter"-->
-<!--                            [class.text-white]="selectedUpgrade === gameService.unAppliedLevelUps[0].commonLetter"-->
-<!--                            class="card h-100 btn btn-light">-->
-<!--                        <div class="card-header">-->
-<!--                            <i class="bi bi-bag-plus"></i>-->
-<!--                            Pogosta črka-->
-<!--                        </div>-->
-<!--                        <div class="card-body text-center w-100" style="font-size: 3rem">-->
-<!--                            {{gameService.unAppliedLevelUps[0].commonLetter}}-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="">-->
-<!--                    <button (click)="selectUpgrade(gameService.unAppliedLevelUps[0].unCommonLetter)"-->
-<!--                            [class.bg-primary]="selectedUpgrade === gameService.unAppliedLevelUps[0].unCommonLetter"-->
-<!--                            [class.text-white]="selectedUpgrade === gameService.unAppliedLevelUps[0].unCommonLetter"-->
-<!--                            class="card h-100 btn btn-light">-->
-<!--                        <div class="card-header">-->
-<!--                            <i class="bi bi-bag-plus"></i>-->
-<!--                            Redka črka-->
-<!--                        </div>-->
-<!--                        <div class="card-body text-center w-100" style="font-size: 3rem">-->
-<!--                            {{gameService.unAppliedLevelUps[0].unCommonLetter}}-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="modal-footer">-->
-<!--        <button class="btn btn-primary" (click)="confirmUpgrade()">Potrdi</button>-->
-<!--    </div>-->
-<!--</ng-template>-->
