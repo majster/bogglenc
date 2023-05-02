@@ -1,49 +1,8 @@
-$board-grid-dimensions: 22rem;
-.board-grid {
-  height: $board-grid-dimensions;
-  width: $board-grid-dimensions;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-
-$board-cell-dimensions: 4.4rem;
-$board-cell-margin-right: 1rem;
-.board-cell {
-  height: $board-cell-dimensions;
-  width: $board-cell-dimensions;
-  margin: 0;
-  margin-right: $board-cell-margin-right;
-  border-width: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2rem;
-
-  &.selected {
-    background-color: #dfdfdf;
-  }
-
-  &.last-letter {
-    background-color: var(--bs-primary);
-    color: white;
-
-    .board-cell-value {
-      color: white !important;
-    }
-  }
-
-
-}
-
-.board {
-  width: $board-grid-dimensions;
-}
 
 .cell {
 
-  height: 65px;
-  width: 65px;
+  height: 63px;
+
   font-size: 2rem;
   line-height: 1;
   border-width: 3px;

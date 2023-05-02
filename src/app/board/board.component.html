@@ -1,34 +1,17 @@
 <div class="board">
-
     <div class="row mb-3" *ngFor="let row of [0,1,2,3]">
         <div class="col d-flex justify-content-center" *ngFor="let cell of [0,1,2,3]">
             <button (click)="selectCell(row , cell)"
                     [class.last-letter]="isCellLastSelected(gameService.gameState.lettersBag[row][cell])"
                     [class.selected]="gameService.gameState.lettersBag[row][cell].selected"
-                    class="btn cell card shadow-sm position-relative">
+                    class="btn cell w-100 card shadow-sm position-relative">
                 <div class="card-body w-100">
                     <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameService.gameState.lettersBag[row][cell].value]}}</span>
                     {{ gameService.gameState.lettersBag[row][cell].value }}
                 </div>
             </button>
-
-<!--            <div style="background: #FFD700; height: 50px; width: 50px;" class="d-flex justify-content-center align-items-center">JA</div>-->
         </div>
     </div>
-
-
-<!--    <div class="board-grid">-->
-<!--        <button (click)="selectCell(index)"-->
-<!--                *ngFor="let gameCell of gameService.boardBag; let index = index"-->
-<!--                [class.last-letter]="isCellLastSelected(gameCell)"-->
-<!--                [class.selected]="gameCell.selected"-->
-<!--                class="btn board-cell card shadow-sm position-relative">-->
-<!--            <div class="card-body">-->
-<!--                <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameCell.value]}}</span>-->
-<!--                {{ gameCell.value }}-->
-<!--            </div>-->
-<!--        </button>-->
-<!--    </div>-->
 
     <div class="commands">
         <div class="card border-1 border mt-3">
