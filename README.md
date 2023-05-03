@@ -17,3 +17,8 @@ firebase emulators:start
 ```shell
 firebase deploy
 ```
+
+
+# TODO:
+- replace font (maybe https://fonts.google.com/specimen/Mitr)
+- make goals visible before game start
