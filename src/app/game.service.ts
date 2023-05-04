@@ -5,7 +5,7 @@ export interface BoggleLetter {
     value: string
     selected: boolean
     selectedIndex: number
-    boardIndex?: number | undefined
+    boardIndex: number
 }
 
 @Injectable({
@@ -46,7 +46,7 @@ export class GameService {
 
     goalsByLength: { [key: string]: number } = {
         "8": 1,
-        "7": 1,
+        "7": 2,
         "6": 5,
         "5": 6,
         "4": 7,
@@ -130,7 +130,7 @@ export class GameService {
 
         if (!this.guessedWordsByLength[lengthAsNum]) {
 
-            const strings:string[] = this.gameState.guessedWords.filter(word => {
+            const strings: string[] = this.gameState.guessedWords.filter(word => {
                 if (lengthAsNum < 8) {
                     return word.length === lengthAsNum
                 } else {
@@ -161,6 +161,12 @@ export class GameService {
         this.goalProgress = Math.ceil((progress / full) * 100);
     }
 
+    isGoalAccomplished(wordLength: number){
+        const guessedWordsByLength = this.getGuessedWordsByLength(wordLength.toString());
+        const goalsByLength = this.goalsByLength[wordLength];
+        return guessedWordsByLength.length >= goalsByLength;
+    }
+
     replaceSelectedCells() {
         const selected = this.selectedLetters;
         const unSelected = this.unSlectedLetters.map(letter => letter.value);
@@ -169,8 +175,8 @@ export class GameService {
         for (let i = 0; i < selected.length; i++) {
 
             let randomLetter!: string;
-            while (!randomLetter || unSelected.filter(value => value === randomLetter).length > 1) {
-                randomLetter = this.getRandomLetter2();
+            while (!randomLetter || this.rejectLetter(unSelected, randomLetter)) {
+                randomLetter = this.getRandomLetter();
             }
 
             randomLetters.push(randomLetter)
@@ -180,23 +186,22 @@ export class GameService {
         selected.forEach((letter, index) => {
             letter.selected = false;
             letter.selectedIndex = 0;
-            letter.boardIndex = undefined;
             letter.value = randomLetters[index];
         });
     }
 
-    setupGame() {
-
-        const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_STATE);
-        if (existingGameState) {
-            this.gameState = JSON.parse(existingGameState);
-            this.resumeTimer();
-        } else {
-            this.createNewGame();
-        }
+    public resumeGame(existingGameState: string) {
+        this.gameState = JSON.parse(existingGameState);
+        this.resumeTimer();
     }
 
-    getRandomLetter2() {
+    newGame() {
+        this.gameState = this.createNewState();
+        this.persistState();
+        this.createTimer();
+    }
+
+    getRandomLetter() {
         const rndInteger = this.getRandomLetterValue();
         const pairs = Object.entries(this.letterValues);
         this.shuffleArray(pairs);
@@ -206,14 +211,13 @@ export class GameService {
         return filter[0][0];
     }
 
-    createNewGame() {
-
+    createNewState() {
         const randomLetters: string[] = [];
         for (let i = 0; i < GameService.BOARD_SIZE; i++) {
 
             let randomLetter!: string;
-            while (!randomLetter || (randomLetters.includes(randomLetter) && randomLetters.filter(value => value === randomLetter).length > 1)) {
-                randomLetter = this.getRandomLetter2();
+            while (!randomLetter || this.rejectLetter(randomLetters, randomLetter)) {
+                randomLetter = this.getRandomLetter();
             }
 
             randomLetters.push(randomLetter)
@@ -230,16 +234,13 @@ export class GameService {
 
         // const playerLettersBag = this.getRandomLettersArray(GameService.BOARD_SIZE);
 
-        this.gameState = {
+        return {
             score: 0,
             goalProgress: 0,
             lettersBag: this.convertToMultiDimensionalBoardBag(playerLettersBag),
             guessedWords: [],
             timeProgress: 0
         }
-        this.persistState();
-        this.createTimer();
-        this.$gameStateSubject.next(false);
     }
 
     createTimer() {
@@ -261,6 +262,32 @@ export class GameService {
     stateChanged(wordGuess?: boolean) {
         this.$gameStateSubject.next(wordGuess);
         this.persistState();
+    }
+
+    private rejectLetter(arr: string[], letter: string): boolean {
+
+        const lettersAlreadyInArray = arr.filter(value => value === letter);
+        if (lettersAlreadyInArray.length >= 2) {
+            return true;
+        }
+
+        const countMap = {} as any;
+        const finalArr = [letter, ...arr]
+
+        for (let i = 0; i < finalArr.length; i++) {
+            if (!countMap[finalArr[i]]) {
+                countMap[finalArr[i]] = 0;
+            }
+            countMap[finalArr[i]] += 1
+        }
+
+        const moreThanTwoTimes = Object.keys(countMap).filter(key => countMap[key] >= 2).length;
+
+        if (moreThanTwoTimes > 2) {
+            return true;
+        }
+
+        return false;
     }
 
     private convertToMultiDimensionalBoardBag(arr: BoggleLetter[]): BoggleLetter[][] {

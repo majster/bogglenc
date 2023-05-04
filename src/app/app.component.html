@@ -1,45 +1,78 @@
 <section>
     <div class="d-flex align-items-center">
         <div class="container p-4">
-            <div class="row border-bottom">
-                <div class="col-3 p-2 border-end">
-                    <app-score></app-score>
+            <ng-container *ngIf="!this.gameService.gameState || menuVisible">
+                <div>
+                    <h2 (click)="menuVisible = false"
+                        *ngIf="this.gameService.gameState"
+                        class="d-flex justify-content-end">
+                        <i class="bi bi-x-lg me-2 mt-2"></i>
+                    </h2>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex"></li>
+                        <li class="list-group-item d-flex">
+                            <h2 class="d-flex"><i class="bi bi-hourglass me-2 mt-2"></i></h2>
+                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1">Časovna omejitev.</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <h2 class="d-flex"><i class="bi bi-trophy me-2  mt-2"></i></h2>
+                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
+                                Poišči besede različnih dolžin.
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <h2 class="d-flex"><i class="bi bi-emoji-sunglasses me-2  mt-2"></i></h2>
+                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Zapri in nadaljuj kasneje.
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <h2 class="d-flex"><i class="bi bi-send me-2  mt-2"></i></h2>
+                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Besede so preverjene na <a
+                                    class="ms-2" href="https://fran.si">https://fran.si</a></div>
+                        </li>
+<!--                        <li class="list-group-item d-flex">-->
+<!--                            <h2 class="d-flex"><i class="bi bi-github me-2  mt-2"></i></h2>-->
+<!--                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Koda je dostopna na <a-->
+<!--                                    class="ms-2" href=""></a></div>-->
+<!--                        </li>-->
+                        <li class="list-group-item d-flex justify-content-center pt-4">
+                            <button (click)="actionConfirmNewGame()" class="btn btn-outline-primary">
+                                <i class="bi bi-dice-5-fill"></i> Nova Igra
+                            </button>
+                        </li>
+                    </ul>
                 </div>
-                <div class="col p-2 d-flex">
-                    <app-inventory></app-inventory>
-                    <button (click)="newGameModal(newGame)" class="btn btn-outline-secondary ms-auto">
-                        <i class="bi bi-dice-5-fill"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col p-2 pt-3">
-                    <app-board *ngIf="!gameWon && !gameOver"></app-board>
-                    <h1 *ngIf="gameOver" class="text-center">
-                        Konec igre.
-                        <button (click)="actionConfirmNewGame()" class="btn btn-outline-secondary ms-auto">
-                            <i class="bi bi-dice-5-fill"></i> Začni novo
+            </ng-container>
+
+            <ng-container *ngIf="this.gameService.gameState && !menuVisible">
+                <div class="row border-bottom">
+                    <div class="col-3 p-2 border-end">
+                        <app-score></app-score>
+                    </div>
+                    <div class="col p-2 d-flex">
+                        <app-inventory></app-inventory>
+                        <button (click)="menuVisible = true" class="btn btn-outline-secondary ms-auto">
+                            <i class="bi bi-list"></i>
                         </button>
-                    </h1>
-                    <h1 *ngIf="gameWon" class="text-center">Čestitke!</h1>
-                    <app-goals *ngIf="gameWon"></app-goals>
+                    </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col p-2 pt-3">
+                        <app-board *ngIf="!gameWon && !gameOver"></app-board>
+                        <h1 *ngIf="gameOver" class="text-center">
+                            Konec igre.
+                            <button (click)="actionConfirmNewGame()" class="btn btn-outline-primary ms-auto">
+                                <i class="bi bi-dice-5-fill"></i> Začni novo
+                            </button>
+                        </h1>
+                        <h1 *ngIf="gameWon" class="text-center">Čestitke!</h1>
+                        <app-goals *ngIf="gameWon"></app-goals>
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </div>
 </section>
-
-<ng-template #newGame>
-    <div class="modal-header">
-        <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-dice-5-fill"></i> Nova igra?</h4>
-        <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
-            <span aria-hidden="true" class="visually-hidden">&times;</span>
-        </button>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" (click)="actionConfirmNewGame()">Začni novo igro</button>
-    </div>
-</ng-template>
 
 
 <router-outlet></router-outlet>

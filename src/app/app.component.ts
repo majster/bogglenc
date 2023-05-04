@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 import {GameService} from "./game.service";
 
@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
 
     gameOver = false
     gameWon = false;
+    menuVisible!: boolean;
     private timeout: any;
 
     constructor(private modalService: BsModalService,
@@ -22,7 +23,11 @@ export class AppComponent implements OnInit {
 
 
     ngOnInit() {
-        this.gameService.setupGame()
+        const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_STATE);
+        if (existingGameState) {
+            this.gameService.resumeGame(existingGameState);
+        }
+
         this.gameService.$gameStateSubject.subscribe(value => {
             if (this.gameService.timeProgress >= 100) {
                 // game over
@@ -37,7 +42,7 @@ export class AppComponent implements OnInit {
                 this.victoryConfetti();
             }
 
-            if(value){
+            if (value) {
                 this.shoot();
                 this.shoot();
                 this.shoot();
@@ -68,21 +73,20 @@ export class AppComponent implements OnInit {
         return Math.random() * (max - min) + min;
     }
 
-    victoryConfetti(){
+    victoryConfetti() {
         const randomNumberInMilliseconds = this.random(300, 1200);
         this.shoot();
         this.timeout = setTimeout(() => this.victoryConfetti(), randomNumberInMilliseconds);
     }
 
-    newGameModal(template: TemplateRef<any>) {
-        this.modalRef = this.modalService.show(template)
-    }
-
     actionConfirmNewGame() {
-        this.modalRef?.hide();
-        clearTimeout(this.timeout);
+        this.gameService.newGame();
         this.gameOver = false
         this.gameWon = false;
-        this.gameService.createNewGame();
+        this.menuVisible = false;
+    }
+
+    showIntro() {
+        return !this.gameService.gameState;
     }
 }

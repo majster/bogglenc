@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, TemplateRef} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {GameService} from "../game.service";
 import {environment} from '../../environments/environment';
+import {catchError, throwError} from "rxjs";
+import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 
 @Component({
     selector: 'app-board',
@@ -9,12 +11,15 @@ import {environment} from '../../environments/environment';
     styleUrls: ['./board.component.scss']
 })
 export class BoardComponent {
-
+    modalRef?: BsModalRef;
     currentWord: string = '';
     wordInvalid = false;
     lastSelectedIndex = 0
+    inProgress: boolean = false;
+    flipCards: number[] =[];
+    goalAlreadyAccomplished = false;
 
-    constructor(private httpClient: HttpClient, public gameService: GameService) {
+    constructor(private httpClient: HttpClient, public gameService: GameService, private modalService: BsModalService) {
         const boggleLettersBySelectedIndex = this.gameService.boardBag.sort((a, b) => b.selectedIndex - a.selectedIndex);
 
         let currentWordInReverse = '';
@@ -28,6 +33,7 @@ export class BoardComponent {
     }
 
     selectCell(row: number, index: number) {
+        this.goalAlreadyAccomplished = false;
         this.wordInvalid = false
         let cell = this.gameService.gameState.lettersBag[row][index];
 
@@ -70,21 +76,35 @@ export class BoardComponent {
     }
 
     submit() {
+
+        if(this.gameService.isGoalAccomplished(this.currentWord.length)){
+            this.goalAlreadyAccomplished = true;
+            return;
+        }
+
+        // this.inProgress = true;
         // this.wordCorrect();
         // this.wordInvalid = true;
         this.httpClient.get(`${environment.wordCheckFunction}?word=${this.currentWord}`, {responseType: "text"})
+            .pipe(
+                catchError(err => {
+                    this.inProgress = false;
+                    this.wordInvalid = true;
+                    console.log('Handling error locally and rethrowing it...', err);
+                    return throwError(err);
+                })
+            )
             .subscribe(value => {
                 if (value === this.currentWord) {
                     this.wordCorrect();
                 }
-            }, error => {
-                this.wordInvalid = true;
             });
     }
 
     restCurrentWord() {
         this.currentWord = '';
         this.wordInvalid = false
+        this.goalAlreadyAccomplished = false;
         this.gameService.boardBag.forEach(value => {
             value.selected = false
             value.selectedIndex = 0
@@ -97,12 +117,22 @@ export class BoardComponent {
     }
 
     private wordCorrect() {
+        this.flipCards = this.gameService.boardBag
+            .filter(letter => letter.selectedIndex > 0)
+            .map(letter => letter.boardIndex);
+
+        setTimeout(() => {this.flipCards = []}, 1000)
+
         this.gameService.score += this.calculateScore(this.currentWord);
         this.gameService.addGuessedWord(this.currentWord)
         this.currentWord = '';
         this.wordInvalid = false
-        this.gameService.replaceSelectedCells();
+        setTimeout(() => this.gameService.replaceSelectedCells(), 700);
         this.gameService.calculateGoalProgress();
         this.gameService.createTimer();
+    }
+
+    actionOpenInventoryModal(template: TemplateRef<any>) {
+        this.modalRef = this.modalService.show(template, {class: 'modal-lg'});
     }
 }
