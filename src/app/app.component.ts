@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 import {GameService} from "./game.service";
 
 @Component({
@@ -9,15 +8,12 @@ import {GameService} from "./game.service";
 })
 export class AppComponent implements OnInit {
 
-    modalRef?: BsModalRef;
-
     gameOver = false
     gameWon = false;
     menuVisible!: boolean;
     private timeout: any;
 
-    constructor(private modalService: BsModalService,
-                public gameService: GameService) {
+    constructor(public gameService: GameService) {
 
     }
 
@@ -26,28 +22,33 @@ export class AppComponent implements OnInit {
         const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_STATE);
         if (existingGameState) {
             this.gameService.resumeGame(existingGameState);
+            this.gameStateChangeHandler(false);
         }
 
         this.gameService.$gameStateSubject.subscribe(value => {
-            if (this.gameService.timeProgress >= 100) {
-                // game over
-                this.gameService.pauseTimer();
-                this.gameOver = true;
-            }
-
-            if (this.gameService.goalProgress >= 100) {
-                // game won
-                this.gameService.pauseTimer();
-                this.gameWon = true;
-                this.victoryConfetti();
-            }
-
-            if (value) {
-                this.shoot();
-                this.shoot();
-                this.shoot();
-            }
+            this.gameStateChangeHandler(value);
         });
+    }
+
+    private gameStateChangeHandler<T>(value: T) {
+        if (this.gameService.timeProgress >= 100) {
+            // game over
+            this.gameService.pauseTimer();
+            this.gameOver = true;
+        }
+
+        if (this.gameService.goalProgress >= 100) {
+            // game won
+            this.gameService.pauseTimer();
+            this.gameWon = true;
+            this.victoryConfetti();
+        }
+
+        if (value) {
+            this.shoot();
+            this.shoot();
+            this.shoot();
+        }
     }
 
     confetti(args: any) {
