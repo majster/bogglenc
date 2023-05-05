@@ -27,10 +27,14 @@ firebase emulators:start
 ### Objava sprememb na firebase
 
 ```shell
+ng build
+```
+
+```shell
 firebase deploy
 ```
 
-## Tehnični detaili
+## Tehnični detajli
 
 ### Fran.si
 
