@@ -1,9 +1,13 @@
-import * as admin from 'firebase-admin';
 import * as https from 'https';
 import * as functions from 'firebase-functions';
+import { db } from './admin';
 
-admin.initializeApp();
-const db = admin.firestore();
+const MAX_WORD_LENGTH = 16;
+let franEnabled = true;
+
+export function useFran(value: boolean) {
+  franEnabled = value;
+}
 
 export interface Word {
   value: string;
@@ -12,6 +16,16 @@ export interface Word {
 }
 
 export function checkWord(word: string): Promise<Word | null> {
+  functions.logger.debug(`Checking word: ${word}`);
+
+  if (!word) {
+    throw new Error('Missing word parameter!');
+  }
+
+  if (word.length > MAX_WORD_LENGTH) {
+    throw new Error('Word is too long!');
+  }
+
   return checkCache(word).then((cachedWord) => {
     return cachedWord ?? checkFran(word);
   });
@@ -30,6 +44,11 @@ function checkCache(word: string): Promise<Word | null> {
 }
 
 function checkFran(word: string): Promise<Word | null> {
+  if (!franEnabled) {
+    functions.logger.warn('Skipping Fran check!');
+    return Promise.resolve(null);
+  }
+
   return new Promise((resolve, reject) => {
     const url = getFranUrl(word);
     const date = new Date().toISOString();
@@ -67,6 +86,7 @@ function checkFran(word: string): Promise<Word | null> {
             functions.logger.info(`Found in Fran: ${word}`);
             resolve(matchingWord);
           } else {
+            functions.logger.info(`Not found in Fran: ${word}`);
             resolve(null);
           }
         });
