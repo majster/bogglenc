@@ -43,4 +43,3 @@ Igra preverja besede na portal [fran.si](https://fran.si). Pogosto množine samo
 ---
 
 ## ☕ Časti avtorja [kafe](https://ko-fi.com/janmaselj)
- 
