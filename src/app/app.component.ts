@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {GameService} from "./game.service";
+import {GameService, GameState} from "./game.service";
+import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
+import {MenuComponent} from "./menu/menu.component";
+import {combineLatest, take} from "rxjs";
 
 @Component({
     selector: 'app-root',
@@ -8,54 +11,42 @@ import {GameService} from "./game.service";
 })
 export class AppComponent implements OnInit {
 
-    gameOver = false
-    gameWon = false;
-    menuVisible!: boolean;
+    protected readonly GameState = GameState;
     private timeout: any;
+    private currentState!: GameState;
 
-    constructor(public gameService: GameService) {
+    constructor(public gameService: GameService, private modalService: BsModalService) {
 
     }
 
-
     ngOnInit() {
-        const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_STATE);
+        const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_DATA);
         if (existingGameState) {
             this.gameService.resumeGame(existingGameState);
             this.gameStateChangeHandler(false);
+        } else {
+            this.openInitialMenu();
         }
 
-        this.gameService.$gameStateSubject.subscribe(value => {
+        this.gameService.gameDataSubject$.subscribe(value => {
             this.gameStateChangeHandler(value);
         });
     }
 
-    private gameStateChangeHandler<T>(value: T) {
-        if (this.gameService.timeProgress >= 100) {
-            // game over
-            this.gameService.pauseTimer();
-            this.gameOver = true;
-        }
-
-        if (this.gameService.goalProgress >= 100) {
-            // game won
-            this.gameService.pauseTimer();
-            this.gameWon = true;
-            this.victoryConfetti();
-        }
-
-        if (value) {
-            this.shoot();
-            this.shoot();
-            this.shoot();
-        }
+    actionConfirmNewGame() {
+        this.gameService.newGame();
+        clearTimeout(this.timeout);
     }
 
-    confetti(args: any) {
+    actionOpenMenu(): BsModalRef {
+        return this.modalService.show(MenuComponent);
+    }
+
+    private confetti(args: any) {
         return (window as any)['confetti'].apply(this, arguments);
     }
 
-    shoot() {
+    private shoot() {
         try {
             this.confetti({
                 angle: this.random(60, 120),
@@ -70,22 +61,53 @@ export class AppComponent implements OnInit {
         }
     }
 
-    random(min: number, max: number) {
+    private random(min: number, max: number) {
         return Math.random() * (max - min) + min;
     }
 
-    victoryConfetti() {
+    private victoryConfetti() {
         const randomNumberInMilliseconds = this.random(300, 1200);
         this.shoot();
         this.timeout = setTimeout(() => this.victoryConfetti(), randomNumberInMilliseconds);
     }
 
-    actionConfirmNewGame() {
-        this.gameService.newGame();
-        this.gameOver = false
-        this.gameWon = false;
-        this.menuVisible = false;
-        clearTimeout(this.timeout);
-        this.gameService.$gameStateSubject.next(false);
+    /**
+     * Open initial menu to show player some information about the game.
+     * @private
+     */
+    private openInitialMenu() {
+        const bsModalRef = this.actionOpenMenu();
+        if (bsModalRef?.onHide && bsModalRef?.onHidden) {
+            combineLatest(
+                [bsModalRef.onHide,
+                    bsModalRef.onHidden]
+            )
+                .pipe(take(1))
+                .subscribe(() => {
+                    this.gameService.newGame();
+                });
+        }
+    }
+
+    private gameStateChangeHandler<T>(value: T) {
+
+        const gameState = this.gameService.gameState;
+        if (gameState === GameState.VICTORY || gameState === GameState.LOSS) {
+            this.gameService.pauseTimer();
+        }
+
+        if (gameState === GameState.VICTORY) {
+            // game won
+            this.gameService.pauseTimer();
+            this.victoryConfetti();
+        }
+
+        if (value) {
+            this.shoot();
+            this.shoot();
+            this.shoot();
+        }
+
+        this.currentState = gameState;
     }
 }

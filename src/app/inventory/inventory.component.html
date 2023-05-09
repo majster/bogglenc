@@ -13,7 +13,7 @@
                 [innerStrokeWidth]="0"
                 [outerStrokeColor]="'#0d6efd'"
                 [outerStrokeWidth]="5"
-                [percent]="gameService.gameState.timeProgress"
+                [percent]="gameService.gameData.timeProgress"
                 [radius]="25"
                 [subtitle]="''"
                 [title]="''"
@@ -55,7 +55,7 @@
         </button>
     </div>
     <div class="modal-body">
-        <div class="alert alert-info">Ko se čas izteče je konec igre.</div>
+        <div class="bg-light p-2">Ko se čas izteče je konec igre.</div>
     </div>
 </ng-template>
 

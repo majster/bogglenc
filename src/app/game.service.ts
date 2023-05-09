@@ -8,13 +8,17 @@ export interface BoggleLetter {
     boardIndex: number
 }
 
+export enum GameState {
+    SELECTING, VICTORY, LOSS
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class GameService {
 
     public static BOARD_SIZE = 16;
-    public static LOCAL_STORAGE_GAME_STATE = 'gameState';
+    public static LOCAL_STORAGE_GAME_DATA = 'gameData';
 
     letterValues: { [key: string]: number } = {
         'a': 1,
@@ -54,7 +58,7 @@ export class GameService {
     }
 
 
-    gameState!: {
+    gameData!: {
         score: number;
         goalProgress: number;
         guessedWords: string[];
@@ -63,60 +67,88 @@ export class GameService {
     }
 
     guessedWordsByLength!: string[][];
+    gameDataSubject$ = new Subject<any>();
 
-    $gameStateSubject = new Subject<any>();
     private timerInterval: any;
 
     constructor() {
     }
 
     get score() {
-        return this.gameState.score;
+        return this.gameData.score;
     }
 
     set score(value: number) {
-        this.gameState.score = value;
+        this.gameData.score = value;
         this.stateChanged();
     }
 
     get guessedWords() {
-        return this.gameState.guessedWords;
+        return this.gameData.guessedWords;
+    }
+
+    get currentWord(): string {
+        const boggleLettersBySelectedIndex = this.selectedByLastIndex;
+        let currentWordInReverse = '';
+        boggleLettersBySelectedIndex.forEach(letter => {
+            if (letter.selectedIndex > 0) {
+                currentWordInReverse += letter.value;
+            }
+        })
+        return currentWordInReverse.split("").reverse().join("");
+    }
+
+    get selectedByLastIndex() {
+        return this.selectedLetters.sort((a, b) => b.selectedIndex - a.selectedIndex);
     }
 
     get goalProgress(): number {
-        return this.gameState.goalProgress;
+        return this.gameData.goalProgress;
     }
 
     set goalProgress(value: number) {
-        this.gameState.goalProgress = value;
+        this.gameData.goalProgress = value;
         this.stateChanged();
     }
 
 
     get boardBag(): BoggleLetter[] {
-        return this.gameState.lettersBag
+        return this.gameData.lettersBag
             .flat();
     }
 
     get timeProgress(): number {
-        return this.gameState.timeProgress;
+        return this.gameData.timeProgress;
     }
 
     set timeProgress(value: number) {
-        this.gameState.timeProgress = value;
+        this.gameData.timeProgress = value;
         this.stateChanged();
     }
 
     get selectedLetters() {
-        return this.gameState.lettersBag.flat().filter(letter => letter.selected);
+        return this.gameData.lettersBag.flat().filter(letter => letter.selected);
     }
 
     get unSlectedLetters() {
-        return this.gameState.lettersBag.flat().filter(letter => !letter.selected);
+        return this.gameData.lettersBag.flat().filter(letter => !letter.selected);
+    }
+
+    /**
+     * Get GameState based on gameData
+     */
+    get gameState(): GameState {
+        if (this.timeProgress === 100) {
+            return GameState.LOSS;
+        } else if (this.goalProgress === 100) {
+            return GameState.VICTORY;
+        } else {
+            return GameState.SELECTING;
+        }
     }
 
     addGuessedWord(word: string) {
-        this.gameState.guessedWords.push(word);
+        this.gameData.guessedWords.push(word);
         this.guessedWordsByLength = [];
         this.stateChanged(true);
     }
@@ -130,7 +162,7 @@ export class GameService {
 
         if (!this.guessedWordsByLength[lengthAsNum]) {
 
-            const strings: string[] = this.gameState.guessedWords.filter(word => {
+            const strings: string[] = this.gameData.guessedWords.filter(word => {
                 if (lengthAsNum < 8) {
                     return word.length === lengthAsNum
                 } else {
@@ -161,7 +193,7 @@ export class GameService {
         this.goalProgress = Math.ceil((progress / full) * 100);
     }
 
-    isGoalAccomplished(wordLength: number){
+    isGoalAccomplished(wordLength: number) {
         const guessedWordsByLength = this.getGuessedWordsByLength(wordLength.toString());
         const goalsByLength = this.goalsByLength[wordLength];
         return guessedWordsByLength.length >= goalsByLength;
@@ -191,17 +223,18 @@ export class GameService {
     }
 
     public resumeGame(existingGameState: string) {
-        this.gameState = JSON.parse(existingGameState);
-        this.gameState.lettersBag.flat().forEach((letter, index) => {
-          // fix a bug where boardIndex was not set
-          letter.boardIndex = index;
+        this.gameData = JSON.parse(existingGameState);
+        this.gameData.lettersBag.flat().forEach((letter, index) => {
+            // fix a bug where boardIndex was not set
+            letter.boardIndex = index;
         })
 
         this.resumeTimer();
     }
 
     newGame() {
-        this.gameState = this.createNewState();
+        this.gameData = this.createNewState();
+        this.gameDataSubject$.next(false);
         this.persistState();
         this.createTimer();
     }
@@ -239,6 +272,8 @@ export class GameService {
 
         // const playerLettersBag = this.getRandomLettersArray(GameService.BOARD_SIZE);
 
+        this.guessedWordsByLength = [];
+
         return {
             score: 0,
             goalProgress: 0,
@@ -249,7 +284,7 @@ export class GameService {
     }
 
     createTimer() {
-        this.gameState.timeProgress = 0;
+        this.gameData.timeProgress = 0;
         this.pauseTimer()
         this.resumeTimer();
     }
@@ -265,7 +300,7 @@ export class GameService {
     }
 
     stateChanged(wordGuess?: boolean) {
-        this.$gameStateSubject.next(wordGuess);
+        this.gameDataSubject$.next(wordGuess);
         this.persistState();
     }
 
@@ -337,7 +372,7 @@ export class GameService {
     }
 
     private persistState() {
-        localStorage.setItem(GameService.LOCAL_STORAGE_GAME_STATE, JSON.stringify(this.gameState));
+        localStorage.setItem(GameService.LOCAL_STORAGE_GAME_DATA, JSON.stringify(this.gameData));
     }
 
     private shuffleArray(array: any[]) {

@@ -25,7 +25,7 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.gameService.$gameStateSubject.subscribe(value => {
+        this.gameService.gameDataSubject$.subscribe(value => {
             this.cdr.markForCheck();
         })
     }

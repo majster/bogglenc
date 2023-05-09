@@ -1,0 +1,41 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left text-uppercase">Bogglenc</h4>
+    <button (click)="modalRef.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="d-flex justify-content-between">
+        <button (click)="actionNewGame()" class="btn btn-outline-primary">
+            <i class="bi bi-dice-5-fill"></i> Začni novo igro
+        </button>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex"></li>
+        <li class="list-group-item d-flex">
+            <h2 class="d-flex"><i class="bi bi-hourglass me-2 mt-2"></i></h2>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1">Igra je časovno omejena.</div>
+        </li>
+        <li class="list-group-item d-flex">
+            <h2 class="d-flex"><i class="bi bi-trophy me-2  mt-2"></i></h2>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
+                Cilj je poiskati besede različnih dolžin. Napredek lahko vidiš s pritiskom na simbol pokala.
+            </div>
+        </li>
+        <li class="list-group-item d-flex">
+            <h2 class="d-flex"><i class="bi bi-send me-2  mt-2"></i></h2>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Besede so preverjene na portalu <a
+                    class="ms-2" href="https://fran.si" target="_blank">fran.si</a></div>
+        </li>
+        <li class="list-group-item d-flex">
+            <h2 class="d-flex"><i class="bi bi-emoji-sunglasses me-2  mt-2"></i></h2>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Zapri igro in nadaljuj kasneje.
+            </div>
+        </li>
+        <li class="list-group-item d-flex">
+            <h2 class="d-flex"><i class="bi bi-github me-2  mt-2"></i></h2>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Koda je dostopna na <a
+                    class="ms-2" href="https://github.com/majster/bogglenc" target="_blank">github.com</a></div>
+        </li>
+    </ul>
+</div>

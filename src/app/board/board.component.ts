@@ -12,37 +12,26 @@ import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 })
 export class BoardComponent {
     modalRef?: BsModalRef;
-    currentWord: string = '';
+
     wordInvalid = false;
-    lastSelectedIndex = 0
     inProgress: boolean = false;
-    flipCards: number[] =[];
+    flipCards: number[] = [];
     goalAlreadyAccomplished = false;
 
     constructor(private httpClient: HttpClient, public gameService: GameService, private modalService: BsModalService) {
-        const boggleLettersBySelectedIndex = this.gameService.boardBag.sort((a, b) => b.selectedIndex - a.selectedIndex);
 
-        let currentWordInReverse = '';
-        boggleLettersBySelectedIndex.forEach(letter => {
-            if (letter.selectedIndex > 0) {
-                currentWordInReverse += letter.value;
-            }
-        })
-        this.currentWord = this.reverse(currentWordInReverse);
-        this.lastSelectedIndex = boggleLettersBySelectedIndex[0].selectedIndex;
     }
 
     selectCell(row: number, index: number) {
         this.goalAlreadyAccomplished = false;
         this.wordInvalid = false
-        let cell = this.gameService.gameState.lettersBag[row][index];
+        let cell = this.gameService.gameData.lettersBag[row][index];
 
-        if (cell.selected && cell.selectedIndex === this.lastSelectedIndex) {
+        const selectedByLastIndex = this.gameService.selectedByLastIndex[0];
+        if (cell.selected && cell.selectedIndex === selectedByLastIndex.selectedIndex) {
             // unselect
             cell.selected = false;
             cell.selectedIndex = 0;
-            this.currentWord = this.currentWord.substring(0, this.currentWord.length - 1);
-            this.lastSelectedIndex -= 1
             return;
         }
 
@@ -50,16 +39,17 @@ export class BoardComponent {
             return;
         }
 
-        cell.selectedIndex = this.lastSelectedIndex += 1;
+        if (selectedByLastIndex) {
+            cell.selectedIndex = selectedByLastIndex.selectedIndex + 1;
+        } else {
+            cell.selectedIndex = 1;
+        }
 
         // Get the selected letter
         const letter = cell.value;
 
         // Select the new cell and update the selected row and col
         cell.selected = true;
-
-        // Add the selected letter to the current word
-        this.currentWord += letter;
 
         this.gameService.stateChanged();
     }
@@ -77,15 +67,16 @@ export class BoardComponent {
 
     submit() {
 
-        if(this.gameService.isGoalAccomplished(this.currentWord.length)){
+        if (this.gameService.isGoalAccomplished(this.gameService.currentWord.length)) {
             this.goalAlreadyAccomplished = true;
             return;
         }
 
         this.inProgress = true;
         // this.wordCorrect();
+        // this.inProgress = false;
         // this.wordInvalid = true;
-        this.httpClient.get(`${environment.wordCheckFunction}?word=${this.currentWord}`, {responseType: "text"})
+        this.httpClient.get(`${environment.wordCheckFunction}?word=${this.gameService.currentWord}`, {responseType: "text"})
             .pipe(
                 catchError(err => {
                     this.inProgress = false;
@@ -95,7 +86,7 @@ export class BoardComponent {
                 })
             )
             .subscribe(value => {
-                if (value === this.currentWord) {
+                if (value === this.gameService.currentWord) {
                     this.wordCorrect();
                 }
                 this.inProgress = false;
@@ -103,7 +94,6 @@ export class BoardComponent {
     }
 
     restCurrentWord() {
-        this.currentWord = '';
         this.wordInvalid = false
         this.goalAlreadyAccomplished = false;
         this.gameService.boardBag.forEach(value => {
@@ -113,8 +103,8 @@ export class BoardComponent {
         this.gameService.stateChanged();
     }
 
-    private reverse(s: string) {
-        return s.split("").reverse().join("");
+    actionOpenInventoryModal(template: TemplateRef<any>) {
+        this.modalRef = this.modalService.show(template, {class: 'modal-lg'});
     }
 
     private wordCorrect() {
@@ -122,18 +112,15 @@ export class BoardComponent {
             .filter(letter => letter.selectedIndex > 0)
             .map(letter => letter.boardIndex);
 
-        setTimeout(() => {this.flipCards = []}, 1000)
+        setTimeout(() => {
+            this.flipCards = []
+        }, 1000)
 
-        this.gameService.score += this.calculateScore(this.currentWord);
-        this.gameService.addGuessedWord(this.currentWord)
-        this.currentWord = '';
+        this.gameService.score += this.calculateScore(this.gameService.currentWord);
+        this.gameService.addGuessedWord(this.gameService.currentWord)
         this.wordInvalid = false
         setTimeout(() => this.gameService.replaceSelectedCells(), 700);
         this.gameService.calculateGoalProgress();
         this.gameService.createTimer();
-    }
-
-    actionOpenInventoryModal(template: TemplateRef<any>) {
-        this.modalRef = this.modalService.show(template, {class: 'modal-lg'});
     }
 }

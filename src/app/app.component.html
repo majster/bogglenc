@@ -1,72 +1,30 @@
 <section>
     <div class="d-flex align-items-center">
         <div class="container p-4">
-            <ng-container *ngIf="!this.gameService.gameState || menuVisible">
-                <div>
-                    <h2 (click)="menuVisible = false"
-                        *ngIf="this.gameService.gameState"
-                        class="d-flex justify-content-end">
-                        <i class="bi bi-x-lg me-2 mt-2"></i>
-                    </h2>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex"></li>
-                        <li class="list-group-item d-flex">
-                            <h2 class="d-flex"><i class="bi bi-hourglass me-2 mt-2"></i></h2>
-                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1">Časovna omejitev.</div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <h2 class="d-flex"><i class="bi bi-trophy me-2  mt-2"></i></h2>
-                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
-                                Poišči besede različnih dolžin.
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <h2 class="d-flex"><i class="bi bi-emoji-sunglasses me-2  mt-2"></i></h2>
-                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Zapri in nadaljuj kasneje.
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <h2 class="d-flex"><i class="bi bi-send me-2  mt-2"></i></h2>
-                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Besede so preverjene na <a
-                                    class="ms-2" href="https://fran.si">https://fran.si</a></div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <h2 class="d-flex"><i class="bi bi-github me-2  mt-2"></i></h2>
-                            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Koda je dostopna na <a
-                                    class="ms-2" href="https://github.com/majster/bogglenc">https://github.com/majster/bogglenc</a></div>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-center pt-4">
-                            <button (click)="actionConfirmNewGame()" class="btn btn-outline-primary">
-                                <i class="bi bi-dice-5-fill"></i> Nova Igra
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </ng-container>
 
-            <ng-container *ngIf="this.gameService.gameState && !menuVisible">
+            <ng-container *ngIf="this.gameService.gameData">
                 <div class="row border-bottom">
                     <div class="col-3 p-2 border-end">
                         <app-score></app-score>
                     </div>
                     <div class="col p-2 d-flex">
                         <app-inventory></app-inventory>
-                        <button (click)="menuVisible = true" class="btn btn-outline-secondary ms-auto">
+                        <button (click)="actionOpenMenu()" class="btn btn-outline-secondary ms-auto">
                             <i class="bi bi-list"></i>
                         </button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col p-2 pt-3">
-                        <app-board *ngIf="!gameWon && !gameOver"></app-board>
-                        <h1 *ngIf="gameOver" class="text-center">
-                            Konec igre.
+                        <app-board *ngIf="gameService.gameState === GameState.SELECTING"></app-board>
+                        <h1 *ngIf="gameService.gameState === GameState.LOSS" class="text-center">
+                            <div class="mb-2">Konec igre.</div>
                             <button (click)="actionConfirmNewGame()" class="btn btn-outline-primary ms-auto">
                                 <i class="bi bi-dice-5-fill"></i> Začni novo
                             </button>
                         </h1>
-                        <h1 *ngIf="gameWon" class="text-center">Čestitke!</h1>
-                        <app-goals *ngIf="gameWon"></app-goals>
+                        <h1 *ngIf="gameService.gameState === GameState.VICTORY" class="text-center">Čestitke!</h1>
+                        <app-goals *ngIf="gameService.gameState === GameState.VICTORY"></app-goals>
                     </div>
                 </div>
             </ng-container>
