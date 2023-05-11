@@ -124,5 +124,6 @@ export class BoardComponent {
         this.wordInvalid = false
         setTimeout(() => this.gameService.replaceSelectedCells(), 700);
         this.gameService.calculateGoalProgress();
+        this.gameService.timeProgress = 0;
     }
 }
