@@ -37,4 +37,8 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         // this.actionOpenInventoryModal(this.templateRef);
     }
+
+    get time(){
+        return Math.abs(100 - this.gameService.timeProgress)
+    }
 }

@@ -73,6 +73,7 @@ export class BoardComponent {
         }
 
         this.inProgress = true;
+        this.gameService.pauseTimer();
         // this.wordCorrect();
         // this.inProgress = false;
         // this.wordInvalid = true;
@@ -81,6 +82,7 @@ export class BoardComponent {
                 catchError(err => {
                     this.inProgress = false;
                     this.wordInvalid = true;
+                    this.gameService.resumeTimer();
                     console.log('Handling error locally and rethrowing it...', err);
                     return throwError(err);
                 })
@@ -90,6 +92,7 @@ export class BoardComponent {
                     this.wordCorrect();
                 }
                 this.inProgress = false;
+                this.gameService.resumeTimer();
             });
     }
 
@@ -121,6 +124,5 @@ export class BoardComponent {
         this.wordInvalid = false
         setTimeout(() => this.gameService.replaceSelectedCells(), 700);
         this.gameService.calculateGoalProgress();
-        this.gameService.createTimer();
     }
 }

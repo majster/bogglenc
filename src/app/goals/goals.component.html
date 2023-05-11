@@ -9,6 +9,7 @@
                     <div class="col-1">
                         <button (click)="byLengthExpandedMap[$any(lengthEntry.key)] = !byLengthExpandedMap[$any(lengthEntry.key)]"
                                 *ngIf="gameService.getGuessedWordsByLength($any(lengthEntry.key)).length > 0"
+                                type="button"
                                 class="rounded-5 border">
                             <i class="bi bi-chevron-expand"></i>
                         </button>

@@ -4,14 +4,16 @@
         <div *ngFor="let row of [0,1,2,3]" class="row mb-3">
             <div *ngFor="let cell of [0,1,2,3]" class="col">
                 <button (click)="selectCell(row , cell)"
-                        [class.last-letter]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && gameService.gameData.lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
-                        [class.selected]="gameService.gameData.lettersBag[row][cell].selected"
-                        [class.border-danger]="wordInvalid && gameService.gameData.lettersBag[row][cell].selected"
-                        [class.border-warning]="goalAlreadyAccomplished && gameService.gameData.lettersBag[row][cell].selected"
+                        [class.animate__flip]="flipCards.includes(gameService.gameData.lettersBag[row][cell].boardIndex)"
                         [class.bg-danger]="wordInvalid && gameService.gameData.lettersBag[row][cell].selected"
                         [class.bg-warning]="goalAlreadyAccomplished && gameService.gameData.lettersBag[row][cell].selected"
-                        [class.animate__flip]="flipCards.includes(gameService.gameData.lettersBag[row][cell].boardIndex)"
-                        class="btn cell w-100 card shadow-sm position-relative animate__animated">
+                        [class.border-danger]="wordInvalid && gameService.gameData.lettersBag[row][cell].selected"
+                        [class.border-warning]="goalAlreadyAccomplished && gameService.gameData.lettersBag[row][cell].selected"
+                        [class.last-letter]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && gameService.gameData.lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
+                        [class.selected]="gameService.gameData.lettersBag[row][cell].selected"
+                        [disabled]="inProgress"
+                        class="btn cell w-100 card shadow-sm position-relative animate__animated"
+                        type="button">
                     <div class="card-body w-100 text-uppercase fw-bold">
                         <!--                    <span class="board-cell-value text-muted position-absolute">{{gameService.letterValues[gameService.gameState.lettersBag[row][cell].value]}}</span>-->
                         {{ gameService.gameData.lettersBag[row][cell].value }}
@@ -22,19 +24,21 @@
 
         <div class="commands">
             <div [class.alert-danger]="wordInvalid"
-                 [class.border-danger]="wordInvalid"
+                 [class.alert-warning]="goalAlreadyAccomplished"
                  [class.alert]="wordInvalid || goalAlreadyAccomplished"
 
-                 [class.alert-warning]="goalAlreadyAccomplished"
+                 [class.border-danger]="wordInvalid"
                  [class.border-warning]="goalAlreadyAccomplished"
                  class="card border-1 border mt-3 alert alert-danger p-0 mb-0"
             >
-                <div class="card-body">
-                    <div *ngIf="gameService.currentWord" class="d-flex justify-content-between align-items-center">
-                        <button (click)="restCurrentWord()" class="btn btn-outline-secondary rounded-1 ps-3 pe-3">
+                <div class="card-body p-0">
+                    <div *ngIf="gameService.currentWord" class="d-flex justify-content-between align-items-stretch">
+                        <button (click)="restCurrentWord()"
+                                class="btn btn-outline-secondary rounded-1 ps-3 pe-3 left-command"
+                                type="button">
                             <i class="bi bi-trash3"></i>
                         </button>
-                        <div class="flex-grow-1 justify-content-center d-flex align-items-center">
+                        <div class="flex-grow-1 justify-content-center d-flex align-items-center p-4">
                             <div class="me-2 text-uppercase">{{gameService.currentWord}}</div>
                             <span *ngIf="gameService.currentWord.length > 2" class="text-muted"
                                   style="font-size: 12px;">({{calculateScore(gameService.currentWord)}} točk)</span>
@@ -45,33 +49,39 @@
                         <button (click)="submit()"
                                 *ngIf="!wordInvalid && !goalAlreadyAccomplished"
                                 [disabled]="gameService.currentWord.length < 3 || inProgress"
-                                class="btn btn-outline-primary rounded-1 ps-3 pe-3">
-                            <i class="bi bi-send"></i>
+                                class="btn btn-primary rounded-1 ps-3 pe-3 right-command text-white"
+                                type="button">
+                            <i *ngIf="!inProgress" class="bi bi-send"></i>
                             <div *ngIf="inProgress" class="spinner-border spinner-border-sm" role="status"></div>
-
                         </button>
 
 
                         <button (click)="restCurrentWord()"
                                 *ngIf="wordInvalid"
-                                class="btn btn-outline-danger rounded-1 ps-3 pe-3">
+                                class="btn btn-outline-danger rounded-1 ps-3 pe-3 right-command"
+                                type="button">
                             <i class="bi bi-trash3"></i>
                         </button>
 
                         <button (click)="actionOpenInventoryModal(goals)"
                                 *ngIf="goalAlreadyAccomplished"
-                                class="btn btn-outline-warning rounded-1 ps-3 pe-3">
+                                class="btn btn-outline-warning rounded-1 ps-3 pe-3 right-command"
+                                type="button">
                             <i class="bi bi-trophy"></i>
                         </button>
 
                     </div>
-                    <div *ngIf="!gameService.currentWord" class="text-muted text-center">Poišči besedo, čas se izteka!</div>
+                    <div *ngIf="!gameService.currentWord" class="text-muted text-center  p-4">Poišči besedo, čas se
+                        izteka!
+                    </div>
                 </div>
             </div>
             <div *ngIf="wordInvalid" class="text-center text-danger"
-                 style="font-size: 12px;">Neznana beseda</div>
+                 style="font-size: 12px;">Neznana beseda
+            </div>
             <div *ngIf="goalAlreadyAccomplished" class="text-center text-warning"
-                 style="font-size: 12px;">Cilj že dosežen</div>
+                 style="font-size: 12px;">Cilj že dosežen
+            </div>
         </div>
     </div>
 

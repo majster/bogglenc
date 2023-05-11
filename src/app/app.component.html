@@ -1,4 +1,4 @@
-<section>
+<main role="main">
     <div class="d-flex align-items-center">
         <div class="container p-4">
 
@@ -7,19 +7,24 @@
                     <div class="col-3 p-2 border-end">
                         <app-score></app-score>
                     </div>
-                    <div class="col p-2 d-flex">
+                    <div class="col p-2 d-flex align-items-center">
                         <app-inventory></app-inventory>
-                        <button (click)="actionOpenMenu()" class="btn btn-outline-secondary ms-auto">
+                        <button (click)="actionOpenMenu()"
+                                aria-label="Meni"
+                                class="btn btn-outline-secondary ms-auto"
+                                type="button">
                             <i class="bi bi-list"></i>
                         </button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col p-2 pt-3">
+                    <div class="col p-2 pt-3" role="application">
                         <app-board *ngIf="gameService.gameState === GameState.SELECTING"></app-board>
                         <h1 *ngIf="gameService.gameState === GameState.LOSS" class="text-center">
                             <div class="mb-2">Konec igre.</div>
-                            <button (click)="actionConfirmNewGame()" class="btn btn-outline-primary ms-auto">
+                            <button (click)="actionConfirmNewGame()"
+                                    class="btn btn-outline-primary ms-auto"
+                                    type="button">
                                 <i class="bi bi-dice-5-fill"></i> Začni novo
                             </button>
                         </h1>
@@ -30,7 +35,7 @@
             </ng-container>
         </div>
     </div>
-</section>
+</main>
 
 
 <router-outlet></router-outlet>

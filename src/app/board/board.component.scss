@@ -29,10 +29,21 @@
       color: white !important;
     }
   }
+
   .board-cell-value {
     top: 2px;
     right: 2px;
     font-size: 0.825rem;
   }
 
+}
+
+.right-command {
+  border-bottom-left-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+}
+
+.left-command {
+  border-bottom-right-radius: 0px !important;
+  border-top-right-radius: 0px !important;
 }

@@ -111,6 +111,14 @@ export class GameService {
         this.stateChanged();
     }
 
+    get goalsTotal(){
+        let total = 0;
+        Object.keys(this.goalsByLength).forEach(key => {
+            total += this.goalsByLength[key];
+        })
+        return total;
+    }
+
 
     get boardBag(): BoggleLetter[] {
         return this.gameData.lettersBag

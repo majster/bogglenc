@@ -1,50 +1,37 @@
-<div class="d-flex ps-2">
-<!--    <div (click)="actionOpenInventoryModal(lettersBag)"-->
-<!--         class="btn btn-outline-secondary rounded-5 p-2 position-relative me-4"-->
-<!--         style="font-size: 1.25rem; width: 48px; height: 48px;">-->
-<!--        <i class="bi bi-bag position-absolute" style="top: 7px; left: 13px"></i>-->
-<!--    </div>-->
+<div class="d-flex align-items-center h-100">
+    <!--    <div (click)="actionOpenInventoryModal(lettersBag)"-->
+    <!--         class="btn btn-outline-secondary rounded-5 p-2 position-relative me-4"-->
+    <!--         style="font-size: 1.25rem; width: 48px; height: 48px;">-->
+    <!--        <i class="bi bi-bag position-absolute" style="top: 7px; left: 13px"></i>-->
+    <!--    </div>-->
 
-    <div (click)="actionOpenInventoryModal(hourGlass)"
-         class="btn btn-outline-light rounded-5 position-relative me-4"
-         style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
-        <circle-progress
-                [animation]="false"
-                [innerStrokeWidth]="0"
-                [outerStrokeColor]="'#0d6efd'"
-                [outerStrokeWidth]="5"
-                [percent]="gameService.gameData.timeProgress"
-                [radius]="25"
-                [subtitle]="''"
-                [title]="''"
-                [units]="''"
-                class="position-absolute"
-                style="top: -12px;left: -12px;"
-        ></circle-progress>
-        <i class="bi bi-hourglass position-absolute" style="top: 7px; left: 13px"></i>
-    </div>
+    <button (click)="actionOpenInventoryModal(hourGlass)"
+            attr.aria-label="Čas {{time}}s"
+            class="btn btn-outline-secondary me-2 position-relative" type="button">
+        <div aria-hidden="true"
+             class="btn p-0 bg-danger position-absolute"
+             style="z-index: -1; top: 0; bottom:0; left: 0; width: {{gameService.gameData.timeProgress}}%;"
+        ></div>
+        <div aria-hidden="true" class="d-flex">
+            <i class="bi bi-hourglass"></i> <span class="ms-2 d-none d-lg-block">Čas ({{time}})</span>
+        </div>
+    </button>
 
-    <div (click)="actionOpenInventoryModal(goals)"
-         class="btn btn-outline-light rounded-5 position-relative me-4"
-         style="font-size: 1.25rem; min-width: 48px; min-height: 48px;">
-        <circle-progress
-                [animation]="false"
-                [innerStrokeWidth]="0"
-                [outerStrokeColor]="'#FFD700'"
-                [outerStrokeWidth]="5"
-                [percent]="gameService.goalProgress"
-                [radius]="25"
-                [subtitle]="''"
-                [title]="''"
-                [units]="''"
-                class="position-absolute"
-                style="top: -12px;left: -12px;"
-        ></circle-progress>
-        <i class="bi bi-trophy position-absolute"
-           [class.bi-trophy]="gameService.goalProgress < 100"
-           [class.bi-trophy-fill]="gameService.goalProgress >= 100"
-           style="top: 7px; left: 13px; {{gameService.goalProgress >= 100 ? 'color: #FFD700' : ''}}"></i>
-    </div>
+
+    <button (click)="actionOpenInventoryModal(goals)"
+            attr.aria-label="Cilji {{gameService.gameData.goalProgress}}%"
+            class="btn btn-outline-secondary position-relative"
+            type="button">
+        <div aria-hidden="true"
+             class="btn p-0 position-absolute goals-progress"
+             style="z-index: -1; top: 0; bottom:0; left: 0; width: {{gameService.gameData.goalProgress}}%;"
+        ></div>
+        <div aria-hidden="true" class="d-flex">
+            <i class="bi bi-trophy"></i> <span
+                class="ms-2 d-none d-lg-block">Cilji ({{gameService.guessedWords.length + '/' + gameService.goalsTotal}}
+            )</span>
+        </div>
+    </button>
 </div>
 
 <ng-template #hourGlass>
