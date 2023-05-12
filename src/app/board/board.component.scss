@@ -36,6 +36,9 @@
     font-size: 0.825rem;
   }
 
+  &:disabled{
+    border-color: var(--bs-card-border-color) !important;
+  }
 }
 
 .right-command {

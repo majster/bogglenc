@@ -1,4 +1,4 @@
-import {Component, TemplateRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {GameService} from "../game.service";
 import {environment} from '../../environments/environment';
@@ -8,7 +8,8 @@ import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 @Component({
     selector: 'app-board',
     templateUrl: './board.component.html',
-    styleUrls: ['./board.component.scss']
+    styleUrls: ['./board.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoardComponent {
     modalRef?: BsModalRef;
@@ -18,7 +19,10 @@ export class BoardComponent {
     flipCards: number[] = [];
     goalAlreadyAccomplished = false;
 
-    constructor(private httpClient: HttpClient, public gameService: GameService, private modalService: BsModalService) {
+    constructor(private httpClient: HttpClient,
+                public gameService: GameService,
+                private modalService: BsModalService,
+                private cdr: ChangeDetectorRef) {
 
     }
 
@@ -83,6 +87,7 @@ export class BoardComponent {
                     this.inProgress = false;
                     this.wordInvalid = true;
                     this.gameService.resumeTimer();
+                    this.cdr.markForCheck();
                     console.log('Handling error locally and rethrowing it...', err);
                     return throwError(err);
                 })
@@ -122,7 +127,10 @@ export class BoardComponent {
         this.gameService.score += this.calculateScore(this.gameService.currentWord);
         this.gameService.addGuessedWord(this.gameService.currentWord)
         this.wordInvalid = false
-        setTimeout(() => this.gameService.replaceSelectedCells(), 700);
+        setTimeout(() => {
+            this.gameService.replaceSelectedCells()
+            this.cdr.markForCheck();
+        }, 700);
         this.gameService.calculateGoalProgress();
         this.gameService.timeProgress = 0;
     }
