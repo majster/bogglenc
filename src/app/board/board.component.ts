@@ -133,5 +133,6 @@ export class BoardComponent {
         }, 700);
         this.gameService.calculateGoalProgress();
         this.gameService.timeProgress = 0;
+        this.cdr.markForCheck();
     }
 }
