@@ -17,7 +17,7 @@ export class LeaderBoardFormComponent {
     constructor(public gameService: GameService, public modalRef: BsModalRef) {
 
         let s = '';
-        for (var i = 41; i <= 64; i++) {
+        for (var i = 40; i <= 64; i++) {
             s += String.fromCharCode(i);
         }
 
@@ -79,6 +79,10 @@ export class LeaderBoardFormComponent {
 
     restCurrentWord() {
         this.currentWord = '';
+        this.boardBag.flat().forEach(value => {
+            value.selected = false;
+            value.selectedIndex = 0;
+        })
     }
 
     reRoll() {

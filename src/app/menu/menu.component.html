@@ -11,6 +11,20 @@
                 class="btn btn-outline-primary">
             <i class="bi bi-dice-5-fill"></i> Začni novo igro
         </button>
+
+        <button (click)="toggleLightDarkMode()"
+                *ngIf="mode === 0"
+                type="button"
+                class="btn btn-secondary">
+            <i class="bi bi-moon"></i> Temni način
+        </button>
+
+        <button (click)="toggleLightDarkMode()"
+                *ngIf="mode === 1"
+                type="button"
+                class="btn btn-secondary">
+            <i class="bi bi-brightness-high"></i> Svetli način
+        </button>
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item d-flex"></li>
