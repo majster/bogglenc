@@ -19,17 +19,25 @@
                 </div>
                 <div class="row">
                     <div class="col p-2 pt-3" role="application">
-                        <app-board *ngIf="gameService.gameState === GameState.SELECTING"></app-board>
-                        <h1 *ngIf="gameService.gameState === GameState.LOSS" class="text-center">
-                            <div class="mb-2">Konec igre.</div>
+                        <app-board *ngIf="gameService.gameState === GameState.SELECTING"
+                                   [lettersBag]="gameService.gameData.lettersBag"></app-board>
+                        <div *ngIf="gameService.gameState === GameState.LOSS" class="text-center">
+                            <div class="mb-2 big-text">Konec igre.</div>
                             <button (click)="actionConfirmNewGame()"
                                     class="btn btn-outline-primary ms-auto"
                                     type="button">
                                 <i class="bi bi-dice-5-fill"></i> Začni novo
                             </button>
-                        </h1>
-                        <h1 *ngIf="gameService.gameState === GameState.VICTORY" class="text-center">Čestitke!</h1>
-                        <app-goals *ngIf="gameService.gameState === GameState.VICTORY"></app-goals>
+                        </div>
+                        <div *ngIf="gameService.gameState === GameState.VICTORY" class="text-center">
+                            <div class="mb-2 big-text">Čestitke za uvrstitev na lestvico!</div>
+                            <button (click)="actionConfirmNewGame()"
+                                    class="btn btn-outline-primary ms-auto"
+                                    type="button">
+                                <i class="bi bi-dice-5-fill"></i> Začni novo
+                            </button>
+                        </div>
+                        <app-leader-board *ngIf="gameService.gameState === GameState.VICTORY"></app-leader-board>
                     </div>
                 </div>
             </ng-container>

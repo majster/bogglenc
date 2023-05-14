@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {GameService} from "../game.service";
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {GameService, GameState} from "../game.service";
 
 @Component({
     selector: 'app-goals',
@@ -7,15 +7,11 @@ import {GameService} from "../game.service";
     styleUrls: ['./goals.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GoalsComponent implements OnInit {
-
-
-    byLengthExpandedMap = {} as any;
+export class GoalsComponent {
 
     constructor(public gameService: GameService) {
     }
 
-    ngOnInit(): void {
-    }
-
+    protected readonly GameService = GameService;
+    protected readonly GameState = GameState;
 }

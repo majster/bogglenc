@@ -11,6 +11,8 @@ import {InventoryComponent} from './inventory/inventory.component';
 import {ModalModule} from "ngx-bootstrap/modal";
 import {NgCircleProgressModule} from "ng-circle-progress";
 import {MenuComponent} from './menu/menu.component';
+import {LeaderBoardComponent} from './leader-board/leader-board.component';
+import {LeaderBoardFormComponent} from './leader-board-form/leader-board-form.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import {MenuComponent} from './menu/menu.component';
     GoalsComponent,
     ScoreComponent,
     InventoryComponent,
-    MenuComponent
+    MenuComponent,
+    LeaderBoardComponent,
+    LeaderBoardFormComponent
   ],
   imports: [
     ModalModule.forRoot(),

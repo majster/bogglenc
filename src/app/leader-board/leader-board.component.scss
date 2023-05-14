@@ -1,0 +1,25 @@
+tr {
+  height: 50px;
+
+  td {
+    vertical-align: middle;
+  }
+
+
+  td:last-child {
+    text-align: end;
+  }
+
+  &.victory {
+    scroll-margin-top: 100px;
+    scroll-margin-bottom: 100px;
+  }
+}
+
+i {
+  color: white;
+}
+
+th:last-child {
+  text-align: end;
+}

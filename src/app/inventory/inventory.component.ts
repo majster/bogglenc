@@ -41,4 +41,6 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     get time(){
         return Math.abs(100 - this.gameService.timeProgress)
     }
+
+    protected readonly GameService = GameService;
 }

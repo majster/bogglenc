@@ -17,4 +17,6 @@ export class MenuComponent {
         this.gameService.newGame();
         this.modalRef.hide();
     }
+
+    protected readonly GameService = GameService;
 }

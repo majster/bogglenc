@@ -17,6 +17,7 @@ export enum GameState {
 })
 export class GameService {
 
+    public static GAME_GOAL = 35;
     public static BOARD_SIZE = 16;
     public static LOCAL_STORAGE_GAME_DATA = 'gameData';
 
@@ -48,25 +49,16 @@ export class GameService {
         'ž': 10,
     };
 
-    goalsByLength: { [key: string]: number } = {
-        "8": 1,
-        "7": 2,
-        "6": 5,
-        "5": 6,
-        "4": 7,
-        "3": 8
-    }
-
-
     gameData!: {
         score: number;
         goalProgress: number;
         guessedWords: string[];
+        missedWords: string[];
         lettersBag: BoggleLetter[][];
         timeProgress: number;
+        victoryName?: string;
     }
 
-    guessedWordsByLength!: string[][];
     gameDataSubject$ = new Subject<any>();
 
     private timerInterval: any;
@@ -87,6 +79,10 @@ export class GameService {
         return this.gameData.guessedWords;
     }
 
+    get missedWords() {
+        return this.gameData.missedWords;
+    }
+
     get currentWord(): string {
         const boggleLettersBySelectedIndex = this.selectedByLastIndex;
         let currentWordInReverse = '';
@@ -99,7 +95,7 @@ export class GameService {
     }
 
     get selectedByLastIndex() {
-        return this.selectedLetters.sort((a, b) => b.selectedIndex - a.selectedIndex);
+        return this.sortBySelectedIndex(this.selectedLetters);
     }
 
     get goalProgress(): number {
@@ -110,15 +106,6 @@ export class GameService {
         this.gameData.goalProgress = value;
         this.stateChanged();
     }
-
-    get goalsTotal(){
-        let total = 0;
-        Object.keys(this.goalsByLength).forEach(key => {
-            total += this.goalsByLength[key];
-        })
-        return total;
-    }
-
 
     get boardBag(): BoggleLetter[] {
         return this.gameData.lettersBag
@@ -146,65 +133,28 @@ export class GameService {
      * Get GameState based on gameData
      */
     get gameState(): GameState {
-        if (this.timeProgress === 100) {
+        if (this.timeProgress >= 100) {
             return GameState.LOSS;
-        } else if (this.goalProgress === 100) {
+        } else if (this.goalProgress >= 100) {
             return GameState.VICTORY;
         } else {
             return GameState.SELECTING;
         }
     }
 
-    addGuessedWord(word: string) {
-        this.gameData.guessedWords.push(word);
-        this.guessedWordsByLength = [];
-        this.stateChanged(true);
+    public sortBySelectedIndex(arr: any[]) {
+        return arr.sort((a, b) => b.selectedIndex - a.selectedIndex);
     }
 
-    getGuessedWordsByLength(length: string): string[] {
-        const lengthAsNum = parseInt(length);
-
-        if (!this.guessedWordsByLength) {
-            this.guessedWordsByLength = [];
-        }
-
-        if (!this.guessedWordsByLength[lengthAsNum]) {
-
-            const strings: string[] = this.gameData.guessedWords.filter(word => {
-                if (lengthAsNum < 8) {
-                    return word.length === lengthAsNum
-                } else {
-                    return word.length >= lengthAsNum
-                }
-            });
-            this.guessedWordsByLength[lengthAsNum] = strings;
-        }
-
-        return this.guessedWordsByLength[lengthAsNum]
+    addGuessedWord(word: string) {
+        this.gameData.guessedWords.push(word);
+        this.stateChanged(true);
     }
 
     calculateGoalProgress() {
 
-        let full = 0;
-        let progress = 0;
-        Object.keys(this.goalsByLength).forEach(wordLength => {
-            const guessedWordsByLength = this.getGuessedWordsByLength(wordLength);
-            const value = this.goalsByLength[wordLength];
-            full += value;
-            if (guessedWordsByLength.length > value) {
-                progress += value;
-            } else {
-                progress += guessedWordsByLength.length;
-            }
-        })
-
-        this.goalProgress = Math.ceil((progress / full) * 100);
-    }
-
-    isGoalAccomplished(wordLength: number) {
-        const guessedWordsByLength = this.getGuessedWordsByLength(wordLength.toString());
-        const goalsByLength = this.goalsByLength[wordLength];
-        return guessedWordsByLength.length >= goalsByLength;
+        let progress = this.guessedWords.length;
+        this.goalProgress = Math.ceil((progress / GameService.GAME_GOAL) * 100);
     }
 
     replaceSelectedCells() {
@@ -278,15 +228,12 @@ export class GameService {
             } as BoggleLetter
         }).sort((a, b) => (a.boardIndex as any) - (b.boardIndex as any))
 
-        // const playerLettersBag = this.getRandomLettersArray(GameService.BOARD_SIZE);
-
-        this.guessedWordsByLength = [];
-
         return {
             score: 0,
             goalProgress: 0,
             lettersBag: this.convertToMultiDimensionalBoardBag(playerLettersBag),
             guessedWords: [],
+            missedWords: [],
             timeProgress: 0
         }
     }
@@ -310,6 +257,13 @@ export class GameService {
     stateChanged(wordGuess?: boolean) {
         this.gameDataSubject$.next(wordGuess);
         this.persistState();
+    }
+
+    public shuffleArray(array: any[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
     private rejectLetter(arr: string[], letter: string): boolean {
@@ -338,7 +292,7 @@ export class GameService {
         return false;
     }
 
-    private convertToMultiDimensionalBoardBag(arr: BoggleLetter[]): BoggleLetter[][] {
+    public convertToMultiDimensionalBoardBag(arr: BoggleLetter[]): BoggleLetter[][] {
 
         const multidimensional: any[] = [];
 
@@ -381,13 +335,6 @@ export class GameService {
 
     private persistState() {
         localStorage.setItem(GameService.LOCAL_STORAGE_GAME_DATA, JSON.stringify(this.gameData));
-    }
-
-    private shuffleArray(array: any[]) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
     }
 
 }

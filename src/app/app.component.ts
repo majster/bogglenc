@@ -90,6 +90,7 @@ export class AppComponent implements OnInit {
     }
 
     private gameStateChangeHandler<T>(value: T) {
+        clearTimeout(this.timeout);
 
         const gameState = this.gameService.gameState;
         if (gameState === GameState.VICTORY || gameState === GameState.LOSS) {
