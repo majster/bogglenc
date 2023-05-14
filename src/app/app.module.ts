@@ -13,6 +13,7 @@ import {NgCircleProgressModule} from "ng-circle-progress";
 import {MenuComponent} from './menu/menu.component';
 import {LeaderBoardComponent} from './leader-board/leader-board.component';
 import {LeaderBoardFormComponent} from './leader-board-form/leader-board-form.component';
+import {LeaderBoardModalComponent} from './leader-board-modal/leader-board-modal.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {LeaderBoardFormComponent} from './leader-board-form/leader-board-form.co
     InventoryComponent,
     MenuComponent,
     LeaderBoardComponent,
-    LeaderBoardFormComponent
+    LeaderBoardFormComponent,
+    LeaderBoardModalComponent
   ],
   imports: [
     ModalModule.forRoot(),
