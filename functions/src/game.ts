@@ -1,4 +1,4 @@
-import {db} from './admin';
+import { db } from './admin';
 import * as crypto from 'crypto';
 import * as wordService from './word';
 
@@ -44,6 +44,7 @@ export interface Game {
   name: string | null;
   startedAt: number;
   endedAt: number | null;
+  endedAndNamed: boolean;
 }
 
 export interface CheckWordResult {
@@ -108,6 +109,7 @@ export function startGame(): Promise<Game> {
     name: null,
     startedAt: new Date().getTime(),
     endedAt: null,
+    endedAndNamed: false,
   };
   return db
     .collection('games')
@@ -170,6 +172,9 @@ export async function guessTheWord(
   if (game.wordCount >= MAX_WORDS_PER_GAME) {
     game.endedAt = new Date().getTime();
     game.leaderboardRank = await getLeaderboardRank(game.score);
+    if (game?.name?.length) {
+      game.endedAndNamed = true;
+    }
   }
   await gameDoc.ref.set(game);
 
@@ -203,6 +208,9 @@ export async function submitName(gameId: string, name: string): Promise<Game> {
   }
 
   game.name = name;
+  if (game.endedAt) {
+    game.endedAndNamed = true;
+  }
   await gameDoc.ref.set(game);
 
   return game;
@@ -211,8 +219,7 @@ export async function submitName(gameId: string, name: string): Promise<Game> {
 export function getLeaderboard(): Promise<Game[]> {
   return db
     .collection('games')
-    .where('name', '!=', null)
-    .where('endedAt', '>', 0)
+    .where('endedAndNamed', '==', true)
     .orderBy('score', 'desc')
     .orderBy('endedAt', 'asc')
     .limit(LEADERBOARD_ENTRIES_LIMIT)
@@ -330,8 +337,7 @@ function getScoreForWord(word: string): number {
 function getLeaderboardRank(score: number): Promise<number> {
   return db
     .collection('games')
-    .where('name', '!=', null)
-    .where('endedAt', '>', 0)
+    .where('endedAndNamed', '==', true)
     .where('score', '>=', score)
     .count()
     .get()
