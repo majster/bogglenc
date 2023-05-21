@@ -5,6 +5,9 @@ tr {
     vertical-align: middle;
   }
 
+  td:first-child{
+    text-align: start;
+  }
 
   td:last-child {
     text-align: end;
@@ -19,7 +22,9 @@ tr {
 i {
   color: white;
 }
-
+th:first-child{
+  text-align: start;
+}
 th:last-child {
   text-align: end;
 }

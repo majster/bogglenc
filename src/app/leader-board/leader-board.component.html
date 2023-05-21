@@ -1,35 +1,27 @@
-<div class="container-sm">
-    <table class="table table-striped">
-        <thead>
-        <th class="col-2">Rank</th>
-        <th class="col-6">Igralec</th>
-        <th class="col-2">Točke</th>
-        <th class="col-2">Deli</th>
-        </thead>
-        <tbody>
-        <tr
-                *ngFor="let data of data; let index = index"
-                [class.bg-primary]="data.victory && gameService.gameData.victoryName"
-                [class.text-white]="data.victory && gameService.gameData.victoryName"
-                [class.victory]="data.victory"
-                id="{{index}}">
-            <td>{{index}}</td>
-            <td>
-                <span *ngIf="!data.victory || gameService.gameData.victoryName">{{data.name}}</span>
-                <button (click)="openLeaderBoardForm()"
-                        *ngIf="data.victory && !gameService.gameData.victoryName"
-                        class="btn btn-primary text-white"
-                        type="button">
-                    <i aria-hidden="true" class="bi bi-trophy"></i> Vpiši se med zmagovalce
-                </button>
-            </td>
-            <td>{{data.score}}</td>
-            <td>
-                <button class="btn btn-outline-secondary border-white" *ngIf="data.victory && gameService.gameData.victoryName" type="button">
-                    <i class="bi bi-share"></i>
-                </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<div class="d-flex justify-content-center">
+    <div class="container-small">
+        <div *ngIf="inProgress" class="spinner-border spinner-border-sm" role="status"></div>
+
+        <table class="table table-striped">
+            <thead>
+            <th class="col-2">Rank</th>
+            <th class="col-6">Igralec</th>
+            <th class="col-2">Točke</th>
+            </thead>
+            <tbody>
+            <tr
+                    *ngFor="let game of games; let index = index"
+                    [class.bg-primary]="game.id === gameService.gameData.game.id"
+                    [class.text-white]="game.id === gameService.gameData.game.id"
+                    [class.victory]="game.id === gameService.gameData.game.id"
+                    id="{{index}}">
+                <td>{{game.leaderboardRank}}</td>
+                <td>
+                    <span class="text-uppercase">{{game.name}}</span>
+                </td>
+                <td>{{game.score}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

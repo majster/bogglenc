@@ -1,4 +1,4 @@
-import { db } from './admin';
+import {db} from './admin';
 import * as crypto from 'crypto';
 import * as wordService from './word';
 
@@ -87,7 +87,7 @@ const RANDOM_LETTER_SCORE_WEIGHTS: { score: LetterScore; weight: number }[] = [
   { score: 3, weight: 10 },
   { score: 4, weight: 10 },
   { score: 5, weight: 5 },
-  { score: 7, weight: 10 },
+  { score: 7, weight: 5 },
   { score: 10, weight: 5 },
 ];
 
@@ -124,7 +124,7 @@ export async function guessTheWord(
   if (!gameId?.length) {
     throw new Error('Missing gameId!');
   }
-  if (letterIndexes?.length <= MIN_WORD_LENGTH) {
+  if (letterIndexes?.length < MIN_WORD_LENGTH) {
     throw new Error('At least 3 letters are required!');
   }
   if (letterIndexes.length > BOARD_SIZE) {

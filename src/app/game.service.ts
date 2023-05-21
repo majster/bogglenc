@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Subject} from "rxjs";
+import {BehaviorSubject, catchError, Subject, throwError} from "rxjs";
+import {BackendService, Game} from "./backend.service";
 
 export interface BoggleLetter {
     value: string
@@ -12,6 +13,10 @@ export enum GameState {
     SELECTING, VICTORY, LOSS
 }
 
+export interface GameSettings {
+    lumMode?: string
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -19,7 +24,10 @@ export class GameService {
 
     public static GAME_GOAL = 35;
     public static BOARD_SIZE = 16;
-    public static LOCAL_STORAGE_GAME_DATA = 'gameData';
+    public static LOCAL_STORAGE_GAME_DATA = 'gameDataV2';
+    public static LOCAL_STORAGE_GAME_SETTINGS = 'gameSettings';
+
+    isShowMainMenu = true;
 
     letterValues: { [key: string]: number } = {
         'a': 1,
@@ -50,29 +58,26 @@ export class GameService {
     };
 
     gameData!: {
-        score: number;
         goalProgress: number;
         guessedWords: string[];
         missedWords: string[];
         lettersBag: BoggleLetter[][];
         timeProgress: number;
-        victoryName?: string;
+        game: Game;
     }
 
-    gameDataSubject$ = new Subject<any>();
+    gameSettings: GameSettings = {} as GameSettings
 
+    gameDataSubject$ = new Subject<any>();
+    leaderBoardFormSubject$ = new Subject<any>();
+    newGameCreating$ = new BehaviorSubject<boolean>(false);
     private timerInterval: any;
 
-    constructor() {
+    constructor(private backendService: BackendService) {
     }
 
     get score() {
-        return this.gameData.score;
-    }
-
-    set score(value: number) {
-        this.gameData.score = value;
-        this.stateChanged();
+        return this.gameData.game.score;
     }
 
     get guessedWords() {
@@ -99,7 +104,7 @@ export class GameService {
     }
 
     get goalProgress(): number {
-        return this.gameData.goalProgress;
+        return this.gameData.goalProgress!;
     }
 
     set goalProgress(value: number) {
@@ -113,7 +118,7 @@ export class GameService {
     }
 
     get timeProgress(): number {
-        return this.gameData.timeProgress;
+        return this.gameData.timeProgress!;
     }
 
     set timeProgress(value: number) {
@@ -125,9 +130,6 @@ export class GameService {
         return this.gameData.lettersBag.flat().filter(letter => letter.selected);
     }
 
-    get unSlectedLetters() {
-        return this.gameData.lettersBag.flat().filter(letter => !letter.selected);
-    }
 
     /**
      * Get GameState based on gameData
@@ -157,28 +159,6 @@ export class GameService {
         this.goalProgress = Math.ceil((progress / GameService.GAME_GOAL) * 100);
     }
 
-    replaceSelectedCells() {
-        const selected = this.selectedLetters;
-        const unSelected = this.unSlectedLetters.map(letter => letter.value);
-
-        const randomLetters: string[] = [];
-        for (let i = 0; i < selected.length; i++) {
-
-            let randomLetter!: string;
-            while (!randomLetter || this.rejectLetter(unSelected, randomLetter)) {
-                randomLetter = this.getRandomLetter();
-            }
-
-            randomLetters.push(randomLetter)
-            unSelected.push(randomLetter)
-        }
-
-        selected.forEach((letter, index) => {
-            letter.selected = false;
-            letter.selectedIndex = 0;
-            letter.value = randomLetters[index];
-        });
-    }
 
     public resumeGame(existingGameState: string) {
         this.gameData = JSON.parse(existingGameState);
@@ -186,56 +166,39 @@ export class GameService {
             // fix a bug where boardIndex was not set
             letter.boardIndex = index;
         })
-
+        this.isShowMainMenu = false;
         this.resumeTimer();
     }
 
     newGame() {
-        this.gameData = this.createNewState();
-        this.gameDataSubject$.next(false);
-        this.persistState();
-        this.createTimer();
-    }
-
-    getRandomLetter() {
-        const rndInteger = this.getRandomLetterValue();
-        const pairs = Object.entries(this.letterValues);
-        this.shuffleArray(pairs);
-        const filter = pairs.filter(pair => {
-            return pair[1] - rndInteger === 0;
-        });
-        return filter[0][0];
+        this.createNewState();
     }
 
     createNewState() {
-        const randomLetters: string[] = [];
-        for (let i = 0; i < GameService.BOARD_SIZE; i++) {
+        this.newGameCreating$.next(true);
+        this.backendService.startGame()
+            .pipe(
+                catchError(err => {
+                    this.newGameCreating$.next(false);
+                    console.log('Handling error locally and rethrowing it...', err);
+                    return throwError(err);
+                })
+            )
+            .subscribe(game => {
+                this.gameData = {
+                    goalProgress: 0,
+                    guessedWords: [],
+                    missedWords: [],
+                    timeProgress: 0
+                } as any;
+                this.applyBackendGame(game);
 
-            let randomLetter!: string;
-            while (!randomLetter || this.rejectLetter(randomLetters, randomLetter)) {
-                randomLetter = this.getRandomLetter();
-            }
-
-            randomLetters.push(randomLetter)
-        }
-
-        const playerLettersBag = randomLetters.map((value, index) => {
-            return {
-                value: value,
-                selected: false,
-                selectedIndex: 0,
-                boardIndex: index
-            } as BoggleLetter
-        }).sort((a, b) => (a.boardIndex as any) - (b.boardIndex as any))
-
-        return {
-            score: 0,
-            goalProgress: 0,
-            lettersBag: this.convertToMultiDimensionalBoardBag(playerLettersBag),
-            guessedWords: [],
-            missedWords: [],
-            timeProgress: 0
-        }
+                this.gameDataSubject$.next(false);
+                this.persistState();
+                this.createTimer();
+                this.isShowMainMenu = false;
+                this.newGameCreating$.next(false);
+            })
     }
 
     createTimer() {
@@ -249,6 +212,9 @@ export class GameService {
     }
 
     resumeTimer() {
+        if (this.timerInterval) {
+            this.pauseTimer()
+        }
         this.timerInterval = setInterval(() => {
             this.timeProgress += 1;
         }, 1000)
@@ -257,39 +223,6 @@ export class GameService {
     stateChanged(wordGuess?: boolean) {
         this.gameDataSubject$.next(wordGuess);
         this.persistState();
-    }
-
-    public shuffleArray(array: any[]) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
-    private rejectLetter(arr: string[], letter: string): boolean {
-
-        const lettersAlreadyInArray = arr.filter(value => value === letter);
-        if (lettersAlreadyInArray.length >= 2) {
-            return true;
-        }
-
-        const countMap = {} as any;
-        const finalArr = [letter, ...arr]
-
-        for (let i = 0; i < finalArr.length; i++) {
-            if (!countMap[finalArr[i]]) {
-                countMap[finalArr[i]] = 0;
-            }
-            countMap[finalArr[i]] += 1
-        }
-
-        const moreThanTwoTimes = Object.keys(countMap).filter(key => countMap[key] >= 2).length;
-
-        if (moreThanTwoTimes > 2) {
-            return true;
-        }
-
-        return false;
     }
 
     public convertToMultiDimensionalBoardBag(arr: BoggleLetter[]): BoggleLetter[][] {
@@ -308,33 +241,44 @@ export class GameService {
         return multidimensional;
     }
 
-    private getRandomLetterValue(): number {
-        let rndInteger: number | undefined;
-
-        while (rndInteger === undefined || [6, 8, 9].includes(rndInteger)) {
-            const rnd = Math.random();
-            if (rnd < 0.5) {
-                rndInteger = 1;
-            } else if (rnd < 0.6) {
-                rndInteger = 2;
-            } else if (rnd < 0.7) {
-                rndInteger = 3;
-            } else if (rnd < 0.8) {
-                rndInteger = 4;
-            } else if (rnd < 0.85) {
-                rndInteger = 5;
-            } else if (rnd < 0.95) {
-                rndInteger = 7;
-            } else {
-                rndInteger = 10;
-            }
+    public toggleLightDarkMode() {
+        const token = 'dark';
+        if (document.body.classList.contains(token)) {
+            document.body.classList.remove(token)
+            this.setLumMode('');
+        } else {
+            this.setLumMode(token);
         }
+    }
 
-        return rndInteger;
+    public setLumMode(token: string) {
+        if (token) {
+            document.body.classList.add(token)
+        }
+        this.gameSettings.lumMode = token;
+        localStorage.setItem(GameService.LOCAL_STORAGE_GAME_SETTINGS, JSON.stringify(this.gameSettings));
+    }
+
+    public exitGame() {
+        this.pauseTimer();
+        this.isShowMainMenu = true;
+    }
+
+    public applyBackendGame(game: Game) {
+        const playerLettersBag = game.board.map((letter, index) => {
+            return {
+                value: letter.char,
+                selected: false,
+                selectedIndex: 0,
+                boardIndex: index
+            } as BoggleLetter
+        });
+
+        this.gameData.game = game;
+        this.gameData.lettersBag = this.convertToMultiDimensionalBoardBag(playerLettersBag);
     }
 
     private persistState() {
         localStorage.setItem(GameService.LOCAL_STORAGE_GAME_DATA, JSON.stringify(this.gameData));
     }
-
 }

@@ -14,6 +14,8 @@ import {MenuComponent} from './menu/menu.component';
 import {LeaderBoardComponent} from './leader-board/leader-board.component';
 import {LeaderBoardFormComponent} from './leader-board-form/leader-board-form.component';
 import {LeaderBoardModalComponent} from './leader-board-modal/leader-board-modal.component';
+import {MainMenuComponent} from './main-menu/main-menu.component';
+import {VictoryConfettiComponent} from './victory-confetti/victory-confetti.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import {LeaderBoardModalComponent} from './leader-board-modal/leader-board-modal
     MenuComponent,
     LeaderBoardComponent,
     LeaderBoardFormComponent,
-    LeaderBoardModalComponent
+    LeaderBoardModalComponent,
+    MainMenuComponent,
+    VictoryConfettiComponent
   ],
   imports: [
     ModalModule.forRoot(),

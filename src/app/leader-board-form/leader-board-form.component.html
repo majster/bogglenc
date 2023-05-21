@@ -1,6 +1,6 @@
 <div class="modal-header">
     <h4 class="modal-title pull-left text-uppercase"><i class="bi bi-trophy"></i> Vpiši se</h4>
-    <button (click)="modalRef?.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
+    <button (click)="modalRef.hide()" aria-label="Close" class="btn-close close pull-right" type="button">
         <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
 </div>
@@ -32,7 +32,7 @@
                     <button (click)="reRoll()"
                             class="btn btn-secondary rounded-0 ps-3 pe-3"
                             type="button">
-                        <i class="bi bi-dice-6-fill"></i>
+                        <i class="bi bi-recycle"></i>
                     </button>
                     <div class="flex-grow-1 justify-content-center d-flex align-items-center p-4">
                         <div class="me-2 text-uppercase">{{currentWord}}</div>

@@ -1,66 +1,58 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BsModalService} from "ngx-bootstrap/modal";
-import {LeaderBoardFormComponent} from "../leader-board-form/leader-board-form.component";
 import {GameService} from "../game.service";
+import {catchError, Subscription, throwError} from "rxjs";
+import {BackendService, Game} from "../backend.service";
 
 @Component({
     selector: 'app-leader-board',
     templateUrl: './leader-board.component.html',
     styleUrls: ['./leader-board.component.scss']
 })
-export class LeaderBoardComponent implements AfterViewInit, OnInit {
+export class LeaderBoardComponent implements OnInit, OnDestroy {
     numbers = Array(50).fill(0).map((x, i) => i);
-    data = [] as any[];
+    games: Game[] = [];
+    inProgress = false;
+    private leaderBoardFormSubscription!: Subscription;
 
-    constructor(private modalService: BsModalService, public gameService: GameService) {
-        this.setupDemoData();
+    constructor(private modalService: BsModalService,
+                public gameService: GameService,
+                public backendService: BackendService) {
     }
 
     ngOnInit() {
-        // call gateway for hi-score
+        this.fetchLeaderBoard();
 
-        this.gameService.gameDataSubject$.subscribe(value => {
-            if (this.gameService.gameData.victoryName) {
-                const entry = this.data.filter(entry => {
-                    return entry.victory;
+        this.leaderBoardFormSubscription = this.gameService.leaderBoardFormSubject$.subscribe(value => {
+            this.fetchLeaderBoard();
+            this.scrollToRank();
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.leaderBoardFormSubscription.unsubscribe();
+    }
+
+    private fetchLeaderBoard() {
+        this.inProgress = true;
+        this.backendService.getLeaderBoard()
+            .pipe(
+                catchError(err => {
+                    this.inProgress = false;
+                    console.log('Handling error locally and rethrowing it...', err);
+                    return throwError(err);
                 })
-
-                entry[0].name = this.gameService.gameData.victoryName
-            }
-        })
+            )
+            .subscribe(data => {
+                this.games = data as any[];
+                this.inProgress = false;
+            })
     }
 
-    ngAfterViewInit() {
-        const element = document.getElementById('25')
+    private scrollToRank() {
+        const element = document.getElementById(`${this.gameService.gameData.game.leaderboardRank}`)
         if (element) {
-            setTimeout(()=> element.scrollIntoView({block: "start", behavior: "auto"}), 700);
+            setTimeout(() => element.scrollIntoView({block: "start", behavior: "auto"}), 700);
         }
-    }
-
-    openLeaderBoardForm() {
-        this.modalService.show(LeaderBoardFormComponent)
-    }
-
-    private setupDemoData() {
-        for (let i = 0; i < this.numbers.length; i++) {
-            this.data.push({
-                name: this.randomName(),
-                score: i,
-                victory: i === 25
-            } as any)
-        }
-    }
-
-    private randomName() {
-        let s = '';
-        for (var i = 0; i <= this.randomIntFromInterval(1, 10); i++) {
-            s += String.fromCharCode(this.randomIntFromInterval(41, 132));
-        }
-        return s;
-    }
-
-
-    private randomIntFromInterval(min: number, max: number) { // min and max included
-        return Math.floor(Math.random() * (max - min + 1) + min)
     }
 }

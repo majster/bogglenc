@@ -29,17 +29,23 @@ export class MenuComponent {
     }
 
     toggleLightDarkMode() {
+
         if (this.mode === LumMode.LIGHT) {
             this.mode = LumMode.DARK;
-            document.body.classList.add('dark')
         } else {
             this.mode = LumMode.LIGHT;
-            document.body.classList.remove('dark')
         }
+
+        this.gameService.toggleLightDarkMode()
     }
 
     actionOpenLeaderBoard() {
         this.modalRef.hide();
-        this.modalService.show(LeaderBoardModalComponent)
+        setTimeout(() => this.modalService.show(LeaderBoardModalComponent), 150)
+    }
+
+    actionExitGame() {
+        this.gameService.exitGame();
+        this.modalRef.hide();
     }
 }

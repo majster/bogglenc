@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
 import {BoggleLetter, GameService} from "../game.service";
 import {BsModalRef} from "ngx-bootstrap/modal";
+import {BackendService} from "../backend.service";
+import {catchError, throwError} from "rxjs";
 
 @Component({
     selector: 'app-leader-board-form',
@@ -13,8 +15,9 @@ export class LeaderBoardFormComponent {
     inProgress!: boolean;
     charArr!: string[]
     maxLength = false;
+    bagIndex = 0;
 
-    constructor(public gameService: GameService, public modalRef: BsModalRef) {
+    constructor(public gameService: GameService, public modalRef: BsModalRef, private backendService: BackendService) {
 
         let s = '';
         for (var i = 40; i <= 64; i++) {
@@ -72,9 +75,23 @@ export class LeaderBoardFormComponent {
     }
 
     submit() {
-        this.gameService.gameData.victoryName = this.currentWord;
-        this.gameService.stateChanged(false)
-        this.modalRef.hide();
+
+        this.inProgress = true;
+        this.backendService.submitName(this.gameService.gameData.game.id, this.currentWord)
+            .pipe(
+                catchError(err => {
+                    this.inProgress = false;
+                    console.log('Handling error locally and rethrowing it...', err);
+                    return throwError(err);
+                })
+            )
+            .subscribe(value => {
+                this.inProgress = false;
+                this.gameService.leaderBoardFormSubject$.next(true);
+                this.gameService.gameData.game.name = this.currentWord;
+                this.gameService.stateChanged(false)
+                this.modalRef.hide();
+            })
     }
 
     restCurrentWord() {
@@ -86,15 +103,20 @@ export class LeaderBoardFormComponent {
     }
 
     reRoll() {
+        this.bagIndex += GameService.BOARD_SIZE;
+        if(this.bagIndex > 48){
+            this.bagIndex = 0;
+        }
         this.generateBoardBag();
     }
 
     private generateBoardBag() {
         const arr = [];
+
         for (let i = 0; i < GameService.BOARD_SIZE; i++) {
-            this.gameService.shuffleArray(this.charArr);
+
             arr.push({
-                value: this.charArr[0],
+                value: this.charArr[i + this.bagIndex],
                 selectedIndex: 0,
                 boardIndex: i,
                 selected: false

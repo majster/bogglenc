@@ -19,7 +19,8 @@ ng serve --watch --live-reload
 **Zagon zalednih storitev**
 
 ```shell
-firebase emulators:start
+cd functions
+npm run serve
 ```
 
 ## Navodila za uporabo

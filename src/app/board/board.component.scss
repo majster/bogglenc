@@ -18,7 +18,7 @@
   }
 
   &.selected {
-    background-color: var(--bs-light);
+    background-color: $gray-600;
   }
 
   &.last-letter {

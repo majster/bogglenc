@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  wordCheckFunction: "http://127.0.0.1:5001/boggelnc/europe-west1/wordCheck",
+  backendPath: "http://127.0.0.1:5001/boggelnc/europe-west1",
 };
 
 /*

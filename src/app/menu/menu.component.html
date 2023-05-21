@@ -10,6 +10,10 @@
                 type="button"
                 class="btn btn-outline-primary">
             <i class="bi bi-dice-5-fill"></i> Začni novo igro
+            <div *ngIf="gameService.newGameCreating$ | async"
+                 aria-hidden="true"
+                 class="spinner-border spinner-border-sm"
+                 role="status"></div>
         </button>
 
         <button (click)="toggleLightDarkMode()"
@@ -30,12 +34,10 @@
         <li class="list-group-item d-flex"></li>
         <li class="list-group-item d-flex">
             <div class="d-flex big-text"><i class="bi bi-ladder me-2 mt-2"></i></div>
-            <a  class="d-flex align-items-center p-2 flex-grow-1"
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
+            <a  class="flex-grow-1" role="button"
             (click)="actionOpenLeaderBoard()">Lestvica najboljših</a>
-        </li>
-        <li class="list-group-item d-flex">
-            <div class="d-flex big-text"><i class="bi bi-hourglass me-2 mt-2"></i></div>
-            <div class="d-flex align-items-center bg-light p-2 flex-grow-1">Igra je časovno omejena.</div>
+            </div>
         </li>
         <li class="list-group-item d-flex">
             <div class="d-flex big-text"><i class="bi bi-trophy me-2  mt-2"></i></div>
@@ -49,14 +51,12 @@
                     class="ms-2" href="https://fran.si" target="_blank">fran.si</a></div>
         </li>
         <li class="list-group-item d-flex">
-            <div class="d-flex big-text"><i class="bi bi-emoji-sunglasses me-2  mt-2"></i></div>
-            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Zapri igro in nadaljuj kasneje.
-            </div>
-        </li>
-        <li class="list-group-item d-flex">
             <div class="d-flex big-text"><i class="bi bi-github me-2  mt-2"></i></div>
             <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Koda je dostopna na <a
                     class="ms-2" href="https://github.com/majster/bogglenc" target="_blank">github.com</a></div>
+        </li>
+        <li class="list-group-item d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" (click)="actionExitGame()">Izhod</button>
         </li>
     </ul>
 </div>
