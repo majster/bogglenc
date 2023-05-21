@@ -79,27 +79,8 @@ describe('game tests', () => {
     expect(result.game.score).to.be.equal(100 + result.scoreForWord);
     expect(result.game.wordCount).to.be.equal(35);
     expect(result.game.endedAt).to.be.a('number');
-  });
-
-  it('guessTheWord game ends', async () => {
-    // Arrange
-    const game = await gameFunctions.startGame().then(async (game) => {
-      game.wordCount = 34;
-      game.score = 100;
-      await db.collection('games').doc(game.id).set(game);
-      return game;
-    });
-    const [word, letterIndexes] = await mockWord(game);
-
-    // Act
-    const result = await gameFunctions.guessTheWord(game.id, letterIndexes);
-    expect(result.word).to.equal(word);
-    expect(result.correct).to.be.true;
-    expect(result.scoreForWord).to.be.a('number').and.be.greaterThan(0);
-    expect(result.game.score).to.be.equal(100 + result.scoreForWord);
-    expect(result.game.wordCount).to.be.equal(35);
-    expect(result.game.endedAt).to.be.a('number');
     expect(result.game.leaderboardRank).to.be.a('number');
+    expect(result.game.endedAndNamed).to.be.false;
   });
 
   it('getLeaderboard', async () => {
@@ -126,6 +107,7 @@ describe('game tests', () => {
     expect(leaderboardEntry?.name).to.equal(playerName);
     leaderboard.forEach((item) => {
       expect(item.endedAt).to.be.a('number');
+      expect(item.endedAndNamed).to.be.true;
     });
   });
 });
