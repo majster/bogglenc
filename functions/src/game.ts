@@ -331,7 +331,7 @@ function getLeaderboardRank(score: number): Promise<number> {
   return db
     .collection('games')
     .where('name', '!=', null)
-    .where('gameEnded', '==', true)
+    .where('endedAt', '>', 0)
     .where('score', '>=', score)
     .count()
     .get()
