@@ -1,0 +1,56 @@
+
+.dark {
+  $border-color: var(--#{$prefix}border-color-translucent);
+  --#{$prefix}border-color: #{$border-color};
+
+  $secondary: #000;
+  $light: #000;
+
+  /* redefine theme colors for dark theme */
+  $theme-colors: (
+          "primary": $primary,
+          "secondary": $secondary,
+          "success": $success,
+          "danger": $danger,
+          "info": $indigo,
+          "dark": $dark,
+          "light": $light,
+  );
+
+  /* redefine theme color variables */
+  @each $color, $value in $theme-colors {
+    --#{$variable-prefix}#{$color}: #{$value};
+  }
+
+  /* redefine theme color rgb vars (used for bg- colors) */
+  $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+  @each $color, $value in $theme-colors-rgb {
+    --#{$variable-prefix}#{$color}-rgb: #{$value};
+  }
+
+  $body-color: #949494;
+  $body-bg: #35353d;
+
+  --#{$variable-prefix}body-color: #{$body-color};
+  --#{$variable-prefix}body-bg: #{$body-bg};
+
+  $card-color: $body-color;
+  $card-bg: $body-bg;
+
+  --#{$prefix}card-color: #{$card-color};
+  --#{$prefix}card-bg: #{$card-bg};
+
+  $modal-content-color: $body-color;
+  $modal-content-bg: $body-bg;
+
+  --#{$prefix}modal-color: #{$modal-content-color};
+  --#{$prefix}modal-bg: #{$modal-content-bg};
+
+  $list-group-color: $body-color;
+  $list-group-bg: $body-bg;
+
+  --#{$prefix}list-group-color: #{$list-group-color};
+  --#{$prefix}list-group-bg: #{$list-group-bg};
+
+  @import "bootstrap";
+}

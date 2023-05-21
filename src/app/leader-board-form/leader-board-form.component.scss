@@ -18,14 +18,12 @@
   }
 
   &.selected {
-    background-color: $gray-600;
+    background-color: #dfdfdf;
   }
 
   &.last-letter {
     background-color: var(--bs-primary);
-    div {
-      color: white !important;
-    }
+    color: white;
 
     .board-cell-value {
       color: white !important;

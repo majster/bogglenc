@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {GameService, GameState} from "./game.service";
+import {GameService, GameSettings, GameState} from "./game.service";
 import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 import {MenuComponent} from "./menu/menu.component";
 import {combineLatest, take} from "rxjs";
+import {LeaderBoardFormComponent} from "./leader-board-form/leader-board-form.component";
 
 @Component({
     selector: 'app-root',
@@ -19,13 +20,18 @@ export class AppComponent implements OnInit {
 
     }
 
+    get canResumeGame() {
+        return localStorage.getItem(GameService.LOCAL_STORAGE_GAME_DATA);
+    }
+
     ngOnInit() {
-        const existingGameState = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_DATA);
-        if (existingGameState) {
-            this.gameService.resumeGame(existingGameState);
-            this.gameStateChangeHandler(false);
-        } else {
-            this.openInitialMenu();
+        const gameSettingsLS = localStorage.getItem(GameService.LOCAL_STORAGE_GAME_SETTINGS);
+        if (gameSettingsLS) {
+            const settings = JSON.parse(gameSettingsLS) as GameSettings;
+            this.gameService.gameSettings = settings;
+            if (settings.lumMode) {
+                this.gameService.setLumMode(settings.lumMode);
+            }
         }
 
         this.gameService.gameDataSubject$.subscribe(value => {
@@ -40,6 +46,10 @@ export class AppComponent implements OnInit {
 
     actionOpenMenu(): BsModalRef {
         return this.modalService.show(MenuComponent);
+    }
+
+    openLeaderBoardForm() {
+        this.modalService.show(LeaderBoardFormComponent)
     }
 
     private confetti(args: any) {
@@ -65,12 +75,6 @@ export class AppComponent implements OnInit {
         return Math.random() * (max - min) + min;
     }
 
-    private victoryConfetti() {
-        const randomNumberInMilliseconds = this.random(300, 1200);
-        this.shoot();
-        this.timeout = setTimeout(() => this.victoryConfetti(), randomNumberInMilliseconds);
-    }
-
     /**
      * Open initial menu to show player some information about the game.
      * @private
@@ -90,6 +94,7 @@ export class AppComponent implements OnInit {
     }
 
     private gameStateChangeHandler<T>(value: T) {
+        clearTimeout(this.timeout);
 
         const gameState = this.gameService.gameState;
         if (gameState === GameState.VICTORY || gameState === GameState.LOSS) {
@@ -99,7 +104,6 @@ export class AppComponent implements OnInit {
         if (gameState === GameState.VICTORY) {
             // game won
             this.gameService.pauseTimer();
-            this.victoryConfetti();
         }
 
         if (value) {

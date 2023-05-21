@@ -1,0 +1,28 @@
+<h1>Bogglenc</h1>
+<div class="mt-5">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <button (click)="actionNewGame()"
+                    class="btn btn-primary btn-lg p-3" type="button">Nova Igra
+                <div *ngIf="gameService.newGameCreating$ | async"
+                     aria-hidden="true"
+                     class="spinner-border spinner-border-sm"
+                     role="status"></div>
+            </button>
+        </li>
+        <li class="list-group-item">
+            <button (click)="actionResumeGame()"
+                    [class.text-muted]="!existingGame"
+                    [disabled]="!existingGame"
+                    class="btn btn-secondary btn-lg p-3"
+                    type="button">Nadaljuj Igro
+            </button>
+        </li>
+        <li class="list-group-item">
+            <button (click)="actionOpenMenu()"
+                    class="btn btn-outline-secondary btn-lg p-3"
+                    type="button">Meni
+            </button>
+        </li>
+    </ul>
+</div>

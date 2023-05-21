@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-center">
+    <div class="container-small">
+        <div *ngIf="inProgress" class="spinner-border spinner-border-sm" role="status"></div>
+
+        <table class="table table-striped">
+            <thead>
+            <th class="col-2">Rank</th>
+            <th class="col-6">Igralec</th>
+            <th class="col-2">Točke</th>
+            </thead>
+            <tbody>
+            <tr
+                    *ngFor="let game of games; let index = index"
+                    [class.bg-primary]="game.id === gameService.gameData.game.id"
+                    [class.text-white]="game.id === gameService.gameData.game.id"
+                    [class.victory]="game.id === gameService.gameData.game.id"
+                    id="{{index}}">
+                <td>{{game.leaderboardRank}}</td>
+                <td>
+                    <span class="text-uppercase">{{game.name}}</span>
+                </td>
+                <td>{{game.score}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

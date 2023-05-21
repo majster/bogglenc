@@ -10,34 +10,53 @@
                 type="button"
                 class="btn btn-outline-primary">
             <i class="bi bi-dice-5-fill"></i> Začni novo igro
+            <div *ngIf="gameService.newGameCreating$ | async"
+                 aria-hidden="true"
+                 class="spinner-border spinner-border-sm"
+                 role="status"></div>
+        </button>
+
+        <button (click)="toggleLightDarkMode()"
+                *ngIf="mode === 0"
+                type="button"
+                class="btn btn-secondary">
+            <i class="bi bi-moon"></i> Temni način
+        </button>
+
+        <button (click)="toggleLightDarkMode()"
+                *ngIf="mode === 1"
+                type="button"
+                class="btn btn-secondary">
+            <i class="bi bi-brightness-high"></i> Svetli način
         </button>
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item d-flex"></li>
         <li class="list-group-item d-flex">
-            <h2 class="d-flex"><i class="bi bi-hourglass me-2 mt-2"></i></h2>
-            <div class="d-flex align-items-center bg-light p-2 flex-grow-1">Igra je časovno omejena.</div>
-        </li>
-        <li class="list-group-item d-flex">
-            <h2 class="d-flex"><i class="bi bi-trophy me-2  mt-2"></i></h2>
+            <div class="d-flex big-text"><i class="bi bi-ladder me-2 mt-2"></i></div>
             <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
-                Cilj je poiskati besede različnih dolžin. Napredek lahko vidiš s pritiskom na simbol pokala.
+            <a  class="flex-grow-1" role="button"
+            (click)="actionOpenLeaderBoard()">Lestvica najboljših</a>
             </div>
         </li>
         <li class="list-group-item d-flex">
-            <h2 class="d-flex"><i class="bi bi-send me-2  mt-2"></i></h2>
+            <div class="d-flex big-text"><i class="bi bi-trophy me-2  mt-2"></i></div>
+            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">
+                Cilj je poiskati {{GameService.GAME_GOAL}} besed.
+            </div>
+        </li>
+        <li class="list-group-item d-flex">
+            <div class="d-flex big-text"><i class="bi bi-send me-2  mt-2"></i></div>
             <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Besede so preverjene na portalu <a
                     class="ms-2" href="https://fran.si" target="_blank">fran.si</a></div>
         </li>
         <li class="list-group-item d-flex">
-            <h2 class="d-flex"><i class="bi bi-emoji-sunglasses me-2  mt-2"></i></h2>
-            <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Zapri igro in nadaljuj kasneje.
-            </div>
-        </li>
-        <li class="list-group-item d-flex">
-            <h2 class="d-flex"><i class="bi bi-github me-2  mt-2"></i></h2>
+            <div class="d-flex big-text"><i class="bi bi-github me-2  mt-2"></i></div>
             <div class="d-flex align-items-center bg-light p-2 flex-grow-1 flex-wrap">Koda je dostopna na <a
                     class="ms-2" href="https://github.com/majster/bogglenc" target="_blank">github.com</a></div>
+        </li>
+        <li class="list-group-item d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" (click)="actionExitGame()">Izhod</button>
         </li>
     </ul>
 </div>
