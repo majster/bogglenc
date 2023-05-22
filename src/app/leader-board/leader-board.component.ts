@@ -55,4 +55,11 @@ export class LeaderBoardComponent implements OnInit, OnDestroy {
             setTimeout(() => element.scrollIntoView({block: "start", behavior: "auto"}), 700);
         }
     }
+
+    isCurrentGame(game: Game): boolean {
+        if (this.gameService.gameData && this.gameService.gameData.game) {
+            return game.id === this.gameService.gameData.game.id
+        }
+        return false;
+    }
 }

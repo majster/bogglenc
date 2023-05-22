@@ -11,11 +11,11 @@
             <tbody>
             <tr
                     *ngFor="let game of games; let index = index"
-                    [class.bg-primary]="game.id === gameService.gameData.game.id"
-                    [class.text-white]="game.id === gameService.gameData.game.id"
-                    [class.victory]="game.id === gameService.gameData.game.id"
+                    [class.bg-primary]="isCurrentGame(game)"
+                    [class.text-white]="isCurrentGame(game)"
+                    [class.victory]="isCurrentGame(game)"
                     id="{{index}}">
-                <td>{{game.leaderboardRank}}</td>
+                <td>{{index + 1}}</td>
                 <td>
                     <span class="text-uppercase">{{game.name}}</span>
                 </td>
