@@ -98,6 +98,8 @@ const LEADERBOARD_ENTRIES_LIMIT = 50;
 const MIN_UNIQUE_LETTERS_PER_BOARD = 12;
 const MAX_WORDS_PER_GAME = 35;
 const MAX_NAME_LENGTH = 16;
+const VOWELS: LetterChar[] = ['a', 'e', 'i', 'o', 'u', 'r'];
+const LETTER_R = LETTERS.find((letter) => letter.char === 'r')!;
 
 export function startGame(): Promise<Game> {
   const game: Game = {
@@ -250,6 +252,9 @@ function generateRandomBoard(): Letter[] {
     letters.push(generateRandomLetter());
   }
 
+  // indexes don't matter since we'll shuffle the array anyway, just use 0
+  ensureSolvable(letters, [0]);
+
   // disperse possible duplicates at the end of the array
   shuffleArray(letters);
 
@@ -285,6 +290,19 @@ function replaceLetters(board: Letter[], indexesToReplace: number[]) {
   for (let i = 0; i < indexesToReplace.length; i++) {
     board[indexesToReplace[i]] = newLetters[i];
   }
+
+  ensureSolvable(board, indexesToReplace);
+}
+
+function ensureSolvable(board: Letter[], indexesToReplace: number[]) {
+  const containsVowels = board.some((letter) => VOWELS.includes(letter.char));
+  if (containsVowels) {
+    return;
+  }
+
+  const randomIndexToReplace =
+    indexesToReplace[Math.floor(Math.random() * indexesToReplace.length)];
+  board[randomIndexToReplace] = LETTER_R;
 }
 
 function generateRandomLetter(): Letter {
