@@ -1,0 +1,26 @@
+<div *ngIf="!enteredToLeaderBoard" class="text-center">
+    <h2><i class="bi bi-emoji-dizzy"></i> Konec igre ({{gameService.score}})</h2>
+    <p>Premalo pik za uvrstitev na lestvico. Poskusi ponovno!</p>
+</div>
+<div *ngIf="enteredToLeaderBoard" class="text-center">
+    <h2><i class="bi bi-emoji-laughing"></i> Čestitke za uvrstitev na {{gameService.gameData!.game.leaderboardRank}}.
+        mesto! ({{gameService.score}})</h2>
+    <button (click)="actionOpenLeaderBoardForm()"
+            *ngIf="!gameService.gameData!.game.name"
+            class="btn btn-primary text-white btn-lg mt-3"
+            type="button">
+        <i aria-hidden="true" class="bi bi-trophy"></i> Vpiši se med zmagovalce
+    </button>
+
+    <app-victory-confetti></app-victory-confetti>
+</div>
+<div class="text-center">
+    <button (click)="actionBackToMainMenu()"
+            class="btn btn-secondary mt-4"
+            type="button">
+        Nazaj v glavni meni
+    </button>
+</div>
+<div class="mt-4">
+    <app-leader-board></app-leader-board>
+</div>

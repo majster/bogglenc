@@ -1,0 +1,19 @@
+<app-modal [icon]="'trophy'" [title]="'Dosežki'">
+    <div class="h-100">
+        <ng-container [ngTemplateOutletContext]="{words: gameService.guessedWords, title: 'Odkrite besede'}"
+                      [ngTemplateOutlet]="wordsList"></ng-container>
+
+        <ng-container [ngTemplateOutletContext]="{words: gameService.missedWords, title: 'Nepravilni poskusi'}"
+                      [ngTemplateOutlet]="wordsList"></ng-container>
+    </div>
+</app-modal>
+
+<ng-template #wordsList let-title="title" let-words="words">
+    <div class="bg-light p-2 mb-2">
+        <div class="border-bottom pb-2 mb-2">{{title}}</div>
+        <a *ngFor="let word of words" class="bg-white border-1 border rounded-2 d-inline-block p-1 me-1" href="https://fran.si/iskanje?View=1&Query={{word}}"
+           target="_blank">
+            {{word}}
+        </a>
+    </div>
+</ng-template>
