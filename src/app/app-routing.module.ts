@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {ExtraOptions, RouterModule, Routes} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {MainMenuComponent} from "./views/main-menu/main-menu.component";
 import {GameComponent} from "./views/game/game.component";
 import {GameOverComponent} from "./views/game-over/game-over.component";
@@ -20,7 +20,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, {skipLocationChange: true} as ExtraOptions)],
+    imports: [RouterModule.forRoot(routes)],
     exports: [RouterModule]
 })
 export class AppRoutingModule {

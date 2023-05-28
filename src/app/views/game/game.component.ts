@@ -15,6 +15,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
     inProgress = false;
     wordValid$ = new Subject<boolean>()
+    gameOverCondition = 100;
     private timerInterval!: any
     private applyChangesTimeout!: number;
 
@@ -96,7 +97,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.timerInterval = setInterval(() => {
             this.gameService.gameData!.timerProgress += 1;
             this.gameService.persistGameData();
-            if (this.gameService.gameData!.timerProgress >= 100) {
+            if (this.gameService.gameData!.timerProgress >= this.gameOverCondition) {
                 this.handleGameOverCondition();
             }
 
@@ -117,8 +118,14 @@ export class GameComponent implements OnInit, OnDestroy {
         }, 700);
         this.gameService.guessedWords?.push(this.gameService.currentWord)
         this.wordValid$.next(true);
-        this.gameService.gameData!.timerProgress = 0;
+        this.gameService.gameData!.timerProgress = Math.max(this.gameService.gameData!.timerProgress - 20, 0);
         this.inProgress = false;
         this.cdr.detectChanges();
+        // this.levelUp(Math.floor(this.gameService.score! / 5));
+    }
+
+    private levelUp(level: number) {
+        this.gameOverCondition -= (10 * level);
+        console.log(this.gameOverCondition)
     }
 }

@@ -24,6 +24,9 @@ export class InventoryComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input()
     time!: number;
 
+    @Input()
+    gameOverCondition!: number;
+
     modalRef?: BsModalRef;
     @ViewChild("goals")
     templateRef!: TemplateRef<any>;
@@ -38,7 +41,7 @@ export class InventoryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     get timeProgress(){
-        return Math.abs(100 - this.time);;
+        return Math.abs(this.gameOverCondition - this.time);
     }
 
     // get time() {

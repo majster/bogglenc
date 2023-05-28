@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {GameService, GameSettings} from "./services/game.service";
 
 @Component({
@@ -21,5 +21,11 @@ export class AppComponent implements OnInit {
                 this.gameService.setLumMode(settings.lumMode);
             }
         }
+    }
+
+    @HostListener('window:beforeinstallprompt', ['$event'])
+    onBeforeInstallPrompt(e: Event) {
+        // Stash the event so it can be triggered later.
+        this.gameService.beforeInstallPrompt = e;
     }
 }

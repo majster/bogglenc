@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {isDevMode, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -8,7 +8,6 @@ import {HttpClientModule} from "@angular/common/http";
 import {ScoreComponent} from './components/score/score.component';
 import {InventoryComponent} from './components/inventory/inventory.component';
 import {ModalModule} from "ngx-bootstrap/modal";
-import {NgCircleProgressModule} from "ng-circle-progress";
 import {MenuComponent} from './components/menu/menu.component';
 import {LeaderBoardComponent} from './components/leader-board/leader-board.component';
 import {LeaderBoardFormComponent} from './components/leader-board-form/leader-board-form.component';
@@ -19,6 +18,7 @@ import {ModalComponent} from './components/modal/modal.component';
 import {AchievementsComponent} from './components/achievements/achievements.component';
 import {GameComponent} from './views/game/game.component';
 import {GameOverComponent} from './views/game-over/game-over.component';
+import {ServiceWorkerModule} from '@angular/service-worker';
 
 @NgModule({
     declarations: [
@@ -39,10 +39,15 @@ import {GameOverComponent} from './views/game-over/game-over.component';
     ],
     imports: [
         ModalModule.forRoot(),
-        NgCircleProgressModule.forRoot(),
         BrowserModule,
         AppRoutingModule,
-        HttpClientModule
+        HttpClientModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        })
     ],
     providers: [],
     bootstrap: [AppComponent]

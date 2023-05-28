@@ -3,7 +3,8 @@
         <app-score></app-score>
     </div>
     <div class="col p-2 d-flex align-items-center">
-        <app-inventory [time]="timeProgress"></app-inventory>
+        <app-inventory [gameOverCondition]="gameOverCondition"
+                       [time]="timeProgress"></app-inventory>
         <button (click)="actionOpenMenu()"
                 aria-label="Nastavitve"
                 class="btn btn-outline-secondary ms-auto"

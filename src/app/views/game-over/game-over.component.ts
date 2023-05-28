@@ -17,7 +17,7 @@ export class GameOverComponent {
     }
 
     get enteredToLeaderBoard(): boolean {
-        return false;
+        return true;
     }
 
     actionOpenLeaderBoardForm() {

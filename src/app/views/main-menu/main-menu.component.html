@@ -1,11 +1,15 @@
 <div class="d-flex justify-content-between">
-    <h1>Bogglenc</h1>
-    <button (click)="actionOpenMenu()"
-            aria-label="Nastavitve"
-            class="btn btn-outline-secondary ms-auto"
-            type="button">
-        <i class="bi bi-list"></i>
-    </button>
+    <div>
+        <h1>Bogglenc</h1>
+    </div>
+    <div class="align-items-end d-flex">
+        <button (click)="actionOpenMenu()"
+                aria-label="Nastavitve"
+                class="btn btn-outline-secondary ms-auto"
+                type="button">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
 </div>
 <div class="mt-5">
     <dl class="list-group list-group-flush main-menu-list">
@@ -24,7 +28,7 @@
                     [disabled]="!existingGame"
                     class="btn btn-secondary btn-lg p-3 position-relative"
                     type="button">Nadaljuj Igro
-                <div aria-hidden="true" class="attention"></div>
+                <div *ngIf="existingGame" aria-hidden="true" class="attention"></div>
             </button>
         </li>
         <li class="list-group-item">
@@ -37,7 +41,7 @@
             <a class="btn btn-outline-secondary btn-lg p-3"
                href="https://kompostnik.itch.io/bogglenc"
                target="_blank">
-                <i class="bi bi-chat-square-heart"></i> Skupnost
+                <i class="bi bi-chat-square-heart text-primary me-2"></i>Skupnost
             </a>
         </li>
     </dl>

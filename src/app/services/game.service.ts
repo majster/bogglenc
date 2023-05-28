@@ -62,6 +62,7 @@ export class GameService {
     gameSettings: GameSettings = {} as GameSettings
     gameDataSubject$ = new Subject<any>();
     leaderBoardFormSubject$ = new Subject<any>();
+    beforeInstallPrompt: any;
 
     constructor(private backendService: BackendService) {
     }
