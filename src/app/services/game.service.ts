@@ -122,6 +122,11 @@ export class GameService {
         return this.gameData!.lettersBag.flat().filter(letter => letter.selected);
     }
 
+    timeBonusByWord(): number{
+        const bonus = Math.pow(2, this.currentWord.length - 1);
+        return Math.min(bonus, 100);
+    }
+
     public sortBySelectedIndex(arr: any[]) {
         return arr.sort((a, b) => b.selectedIndex - a.selectedIndex);
     }

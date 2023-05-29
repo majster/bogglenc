@@ -68,8 +68,9 @@
                  style="font-size: 12px;">
                 črke ({{calculateLettersValue(gameService.currentWord)}})
                 <span *ngIf="calculateWordLengthValue(gameService.currentWord)">
-                    + dolžina ({{calculateWordLengthValue(gameService.currentWord)}})
+                    + (<i class="bi bi-trophy"></i> {{calculateWordLengthValue(gameService.currentWord)}})
                 </span>
+                 | (-<i class="bi bi-hourglass-top"></i> {{gameService.timeBonusByWord()}}s)
             </div>
             <div *ngIf="wordInvalid" class="text-center text-danger"
                  style="font-size: 12px;">Neznana beseda

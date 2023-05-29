@@ -3,7 +3,7 @@ import {GameData, GameService} from "../../services/game.service";
 import {BsModalRef, BsModalService} from "ngx-bootstrap/modal";
 import {MenuComponent} from "../../components/menu/menu.component";
 import {catchError, Subject, throwError} from "rxjs";
-import {BackendService} from "../../services/backend.service";
+import {BackendService, Game} from "../../services/backend.service";
 import {Router} from "@angular/router";
 import {LeaderBoardModalComponent} from "../../components/leader-board-modal/leader-board-modal.component";
 
@@ -38,7 +38,13 @@ export class MainMenuComponent {
                 })
             )
             .subscribe(game => {
-                this.gameService.gameData = {} as GameData;
+                this.gameService.gameData = {
+                    guessedWords: [],
+                    missedWords: [],
+                    timerProgress: 0,
+                    game: {} as Game,
+                    lettersBag: []
+                } as GameData;
                 this.gameService.applyBackendGame(game);
                 this.gameService.gameData!.timerProgress = 0;
                 this.gameService.persistGameData();
