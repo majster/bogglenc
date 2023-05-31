@@ -41,6 +41,32 @@ export const startGame = functions
   });
 
 /**
+ * Ends the game.
+ * Use POST or PUT.
+ * Expected request body:
+ * <pre>
+ * { gameId: string; }
+ * </pre>
+ *
+ * @returns {Game}
+ */
+export const gameOver = functions
+  .region('europe-west1')
+  .https.onRequest((req, res) => {
+    cors()(req, res, async () => {
+      const requestData = req.body as {
+        gameId: string;
+      };
+
+      const game = await gameService.gameOver(requestData.gameId);
+
+      functions.logger.info(`Ended the game: ${game.id}`, game);
+
+      res.status(200).send(game);
+    });
+  });
+
+/**
  * Verifies a word and updates the game state.
  * Use POST or PUT.
  * Expected request body:
