@@ -1,13 +1,12 @@
-<app-modal [title]="'Nastavitve'">
+<app-modal [title]="'Nastavitve'" [icon]="'gear'" [iconClass]="'text-primary'">
 
     <dl class="list-group list-group-flush main-menu-list">
-        <li class="list-group-item"></li>
         <li class="list-group-item">
             <div class="d-flex justify-content-between">
                 <div class="align-items-center d-flex">Svetlost</div>
 
                 <div>
-                    <label class="night-light-label" for="night-light-checkbox">
+                    <label class="night-light-label shadow-sm" for="night-light-checkbox">
                         <input (click)="toggleLightDarkMode()" [checked]="mode === 1"
                                id="night-light-checkbox"
                                type="checkbox">
@@ -32,14 +31,27 @@
 
                 <div>
                     <button (click)="gameService.beforeInstallPrompt.prompt()"
-                            class="btn btn-outline-secondary"
+                            class="btn btn-outline-secondary shadow-sm"
                             type="button">
                         <i class="bi bi-app-indicator" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </li>
-        <li class="list-group-item"></li>
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+                <div class="align-items-center d-flex">Komentiraj, doniraj, naroči se na obvestila...</div>
+
+                <div>
+                    <a class="btn btn-outline-secondary shadow-sm"
+                       href="https://kompostnik.itch.io/bogglenc"
+                       target="_blank">
+                        <i class="bi bi-chat-square-heart text-primary" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item p-0"></li>
     </dl>
     <div class="d-flex justify-content-end mt-4">
         <button (click)="actionExitGame()" class="btn btn-secondary" type="button">V glavni meni</button>

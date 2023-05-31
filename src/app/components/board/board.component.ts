@@ -34,6 +34,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     @Input()
     lettersBag!: BoggleLetter[][];
 
+    @Input()
+    gameOverCondition!: number;
+
+    @Input()
+    time!: number;
+
     @Output()
     wordSubmitEvent = new EventEmitter<number[]>();
     private flipTimeout!: number;
@@ -44,6 +50,10 @@ export class BoardComponent implements OnInit, OnDestroy {
                 private backendService: BackendService,
                 private cdr: ChangeDetectorRef) {
 
+    }
+
+    get timeProgressBarWidth() {
+        return this.time
     }
 
     selectCell(row: number, index: number) {

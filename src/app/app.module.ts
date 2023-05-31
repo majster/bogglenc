@@ -19,6 +19,7 @@ import {AchievementsComponent} from './components/achievements/achievements.comp
 import {GameComponent} from './views/game/game.component';
 import {GameOverComponent} from './views/game-over/game-over.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
+import {CountUpModule} from "ngx-countup";
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
         BrowserModule,
         AppRoutingModule,
         HttpClientModule,
+        CountUpModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
             enabled: !isDevMode(),
             // Register the ServiceWorker as soon as the application is stable

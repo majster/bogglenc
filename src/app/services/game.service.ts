@@ -28,6 +28,8 @@ export interface GameData {
 export class GameService {
 
     public static GAME_TIME_OUT_MILIS = 1000;
+    public static GAME_WORDS_LIMIT = 100;
+    public static GAME_END_CONDITION_IN_SECONDS = 100;
     public static BOARD_SIZE = 16;
     public static LOCAL_STORAGE_GAME_DATA = 'gameDataV2';
     public static LOCAL_STORAGE_GAME_SETTINGS = 'gameSettings';
@@ -123,7 +125,7 @@ export class GameService {
     }
 
     timeBonusByWord(): number{
-        const bonus = Math.pow(2, this.currentWord.length - 1);
+        const bonus = Math.pow(2, this.currentWord.length - 1) ;
         return Math.min(bonus, 100);
     }
 

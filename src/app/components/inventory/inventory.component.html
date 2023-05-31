@@ -1,17 +1,5 @@
 <div class="d-flex align-items-center h-100">
 
-    <div    attr.aria-label="Čas {{timeProgress}}s"
-            class="btn btn-outline-secondary me-2 position-relative">
-        <div aria-hidden="true"
-             class="btn p-0 bg-danger position-absolute"
-             style="z-index: -1; top: 0; bottom:0; left: 0; width: {{timeProgressBarWidth}}%;"
-        ></div>
-        <div aria-hidden="true" class="d-flex">
-            <i class="bi bi-hourglass"></i> <span class="ms-2 d-none d-lg-block">Čas ({{timeProgress}})</span>
-        </div>
-    </div>
-
-
     <button (click)="actionOpenAchievementsModal()"
             [attr.aria-label]="'Dosežki'"
             class="btn btn-outline-secondary position-relative goals"

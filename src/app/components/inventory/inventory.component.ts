@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -20,7 +19,7 @@ import {AchievementsComponent} from "../achievements/achievements.component";
     styleUrls: ['./inventory.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InventoryComponent implements OnInit, AfterViewInit, OnDestroy {
+export class InventoryComponent implements OnInit, OnDestroy {
     @Input()
     time!: number;
 
@@ -44,22 +43,10 @@ export class InventoryComponent implements OnInit, AfterViewInit, OnDestroy {
         return Math.abs(this.gameOverCondition - this.time);
     }
 
-    // get time() {
-    //     return Math.abs(100 - this.gameService.timeProgress)
-    // }
-
     ngOnInit(): void {
         this.gameDataSubscription = this.gameService.gameDataSubject$.subscribe(value => {
             this.cdr.markForCheck();
         });
-    }
-
-    actionOpenInventoryModal(template: TemplateRef<any>) {
-        this.modalRef = this.modalService.show(template, {class: 'modal-lg'});
-    }
-
-    ngAfterViewInit(): void {
-        // this.actionOpenInventoryModal(this.templateRef);
     }
 
     ngOnDestroy(): void {

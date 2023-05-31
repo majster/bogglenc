@@ -1,6 +1,6 @@
 <div class="modal-header">
     <h2 class="modal-title pull-left text-uppercase">
-        <i *ngIf="icon" class="bi bi-{{icon}}"></i>
+        <i *ngIf="icon" class="bi bi-{{icon}} {{iconClass}}"></i>
         {{title}}
     </h2>
     <button (click)="modalRef.hide()" aria-label="Zapri" class="btn-close close pull-right" type="button">

@@ -3,6 +3,7 @@ import {GameService} from "../../services/game.service";
 import {BsModalService} from "ngx-bootstrap/modal";
 import {LeaderBoardFormComponent} from "../../components/leader-board-form/leader-board-form.component";
 import {Router} from "@angular/router";
+import {AchievementsComponent} from "../../components/achievements/achievements.component";
 
 @Component({
     selector: 'app-game-over',
@@ -10,6 +11,8 @@ import {Router} from "@angular/router";
     styleUrls: ['./game-over.component.scss']
 })
 export class GameOverComponent {
+    protected readonly GameService = GameService;
+
     constructor(public gameService: GameService,
                 private modalService: BsModalService,
                 private router: Router) {
@@ -17,7 +20,15 @@ export class GameOverComponent {
     }
 
     get enteredToLeaderBoard(): boolean {
-        return true;
+        if (!this.gameService.gameData!.game!.leaderboardRank) {
+            return false;
+        }
+        const rankInLimit = this.gameService.gameData!.game!.leaderboardRank > 0 && this.gameService.gameData!.game!.leaderboardRank < 50;
+        return rankInLimit && this.gameService.score! > 0;
+    }
+
+    get endByWordCount(): boolean {
+        return this.gameService!.guessedWords!.length >= GameService.GAME_WORDS_LIMIT;
     }
 
     actionOpenLeaderBoardForm() {
@@ -26,5 +37,9 @@ export class GameOverComponent {
 
     actionBackToMainMenu() {
         this.router.navigate([''], {skipLocationChange: true})
+    }
+
+    actionOpenAchievementsModal() {
+        this.modalService.show(AchievementsComponent, {class: 'modal-lg'})
     }
 }

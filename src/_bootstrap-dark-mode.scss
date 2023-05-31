@@ -53,4 +53,8 @@
   --#{$prefix}list-group-bg: #{$list-group-bg};
 
   @import "bootstrap-imports";
+
+  .btn-outline-secondary{
+    color: $body-color;
+  }
 }

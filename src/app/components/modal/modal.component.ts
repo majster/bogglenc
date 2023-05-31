@@ -11,6 +11,8 @@ export class ModalComponent {
     title!: string;
     @Input()
     icon!: string;
+    @Input()
+    iconClass!: string;
 
     constructor(public modalRef: BsModalRef) {
 

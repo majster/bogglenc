@@ -9,4 +9,6 @@ import {GameService} from "../../services/game.service";
 export class AchievementsComponent {
   constructor(public gameService: GameService) {
   }
+
+    protected readonly GameService = GameService;
 }

@@ -3,7 +3,7 @@
         <app-score></app-score>
     </div>
     <div class="col p-2 d-flex align-items-center">
-        <app-inventory [gameOverCondition]="gameOverCondition"
+        <app-inventory [gameOverCondition]="gameOverConditionInSeconds"
                        [time]="timeProgress"></app-inventory>
         <button (click)="actionOpenMenu()"
                 aria-label="Nastavitve"
@@ -16,6 +16,8 @@
 <div class="row">
     <div class="col p-2 pt-3" role="application">
         <app-board (wordSubmitEvent)="handleWordSubmittedEvent($event)"
+                   [gameOverCondition]="gameOverConditionInSeconds"
+                   [time]="timeProgress"
                    [inProgress]="inProgress"
                    [lettersBag]="gameService.gameData!.lettersBag"
                    [wordValid$]="wordValid$"

@@ -10,7 +10,7 @@
 
 <ng-template #wordsList let-title="title" let-words="words">
     <div class="bg-light p-2 mb-2">
-        <div class="border-bottom pb-2 mb-2">{{title}}</div>
+        <div class="border-bottom pb-2 mb-2">{{title}} ({{words.length}})</div>
         <a *ngFor="let word of words" class="bg-white border-1 border rounded-2 d-inline-block p-1 me-1" href="https://fran.si/iskanje?View=1&Query={{word}}"
            target="_blank">
             {{word}}

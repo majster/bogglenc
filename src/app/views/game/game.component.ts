@@ -15,7 +15,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
     inProgress = false;
     wordValid$ = new Subject<boolean>()
-    gameOverCondition = 100;
+    gameOverConditionInSeconds = GameService.GAME_END_CONDITION_IN_SECONDS;
     private timerInterval!: any
     private applyChangesTimeout!: number;
 
@@ -97,7 +97,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.timerInterval = setInterval(() => {
             this.gameService.gameData!.timerProgress += 1;
             this.gameService.persistGameData();
-            if (this.gameService.gameData!.timerProgress >= this.gameOverCondition) {
+            if (this.gameService.gameData!.timerProgress >= this.gameOverConditionInSeconds) {
                 this.handleGameOverCondition();
             }
 
@@ -107,7 +107,17 @@ export class GameComponent implements OnInit, OnDestroy {
     private handleGameOverCondition() {
         this.inProgress = true;
         this.cdr.detectChanges();
-        this.router.navigate(['game-over'], {skipLocationChange: true})
+        this.backendService.gameOver(this.gameService.gameData!.game.id)
+            .pipe(
+                catchError(err => {
+                    console.log('Handling error locally and rethrowing it...', err);
+                    return throwError(err);
+                })
+            )
+            .subscribe(value => {
+                this.gameService.gameData!.game = value;
+                this.router.navigate(['game-over'], {skipLocationChange: true})
+            })
     }
 
     private wordCorrect(check: CheckWordResult) {

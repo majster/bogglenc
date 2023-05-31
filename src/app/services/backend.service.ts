@@ -51,4 +51,9 @@ export class BackendService {
         const payload = { gameId: gameId, name: name }
         return this.httpClient.post(`${environment.backendPath}/submitName`, payload, {responseType: "json"}) as Observable<CheckWordResult>
     }
+
+    gameOver(gameId: string): Observable<Game> {
+        const payload = { gameId: gameId }
+        return this.httpClient.post(`${environment.backendPath}/gameOver`, payload, {responseType: "json"}) as Observable<Game>
+    }
 }
