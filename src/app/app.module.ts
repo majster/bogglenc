@@ -9,7 +9,6 @@ import {GoalsComponent} from './goals/goals.component';
 import {ScoreComponent} from './score/score.component';
 import {InventoryComponent} from './inventory/inventory.component';
 import {ModalModule} from "ngx-bootstrap/modal";
-import {NgCircleProgressModule} from "ng-circle-progress";
 import {MenuComponent} from './menu/menu.component';
 import {LeaderBoardComponent} from './leader-board/leader-board.component';
 import {LeaderBoardFormComponent} from './leader-board-form/leader-board-form.component';
@@ -33,7 +32,6 @@ import {VictoryConfettiComponent} from './victory-confetti/victory-confetti.comp
   ],
   imports: [
     ModalModule.forRoot(),
-    NgCircleProgressModule.forRoot(),
     BrowserModule,
     AppRoutingModule,
     HttpClientModule
