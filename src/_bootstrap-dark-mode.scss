@@ -28,7 +28,7 @@
     --#{$variable-prefix}#{$color}-rgb: #{$value};
   }
 
-  $body-color: #949494;
+  $body-color: #e0e0e0;
   $body-bg: #35353d;
 
   --#{$variable-prefix}body-color: #{$body-color};
@@ -52,5 +52,9 @@
   --#{$prefix}list-group-color: #{$list-group-color};
   --#{$prefix}list-group-bg: #{$list-group-bg};
 
-  @import "bootstrap";
+  @import "bootstrap-imports";
+
+  .btn-outline-secondary{
+    color: $body-color;
+  }
 }

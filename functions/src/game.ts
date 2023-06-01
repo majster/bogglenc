@@ -51,6 +51,8 @@ export interface CheckWordResult {
   word: string;
   correct: boolean;
   scoreForWord: number;
+  scoreForLetters: number;
+  scoreForLength: number;
   game: Game;
 }
 
@@ -92,11 +94,28 @@ const RANDOM_LETTER_SCORE_WEIGHTS: { score: LetterScore; weight: number }[] = [
   { score: 10, weight: 5 },
 ];
 
+const SCORE_BY_LENGTH: { [key: number]: number } = {
+  3: 0,
+  4: 1,
+  5: 2,
+  6: 4,
+  7: 8,
+  8: 16,
+  9: 32,
+  10: 64,
+  11: 128,
+  12: 256,
+  13: 512,
+  14: 1024,
+  15: 2048,
+  16: 4096,
+};
+
 const BOARD_SIZE = 16;
 const MIN_WORD_LENGTH = 3;
 const LEADERBOARD_ENTRIES_LIMIT = 50;
 const MIN_UNIQUE_LETTERS_PER_BOARD = 12;
-const MAX_WORDS_PER_GAME = 35;
+const MAX_WORDS_PER_GAME = 100;
 const MAX_NAME_LENGTH = 16;
 const VOWELS: LetterChar[] = ['a', 'e', 'i', 'o', 'u', 'r'];
 const LETTER_R = LETTERS.find((letter) => letter.char === 'r')!;
@@ -163,11 +182,15 @@ export async function guessTheWord(
       word: wordString,
       correct: false,
       scoreForWord: 0,
+      scoreForLetters: 0,
+      scoreForLength: 0,
       game,
     };
   }
 
-  const scoreForWord = getScoreForWord(wordString);
+  const scoreForLetters = getScoreForLetters(wordString);
+  const scoreForLength = SCORE_BY_LENGTH[wordString.length] ?? 0;
+  const scoreForWord = scoreForLetters + scoreForLength;
   game.score += scoreForWord;
   game.wordCount = game.wordCount + 1;
   replaceLetters(game.board, letterIndexes);
@@ -184,8 +207,35 @@ export async function guessTheWord(
     word: wordString,
     correct: true,
     scoreForWord,
+    scoreForLetters,
+    scoreForLength,
     game,
   };
+}
+
+export async function gameOver(gameId: string): Promise<Game> {
+  if (!gameId?.length) {
+    throw new Error('Missing gameId!');
+  }
+
+  const gameDoc = await db.collection('games').doc(gameId).get();
+  if (!gameDoc.exists) {
+    throw new Error('Game not found!');
+  }
+
+  const game: Game = gameDoc.data() as Game;
+  if (game.endedAt) {
+    throw new Error('Game has already ended!');
+  }
+
+  game.endedAt = new Date().getTime();
+  game.leaderboardRank = await getLeaderboardRank(game.score);
+  if (game.name?.length) {
+    game.endedAndNamed = true;
+  }
+  await gameDoc.ref.set(game);
+
+  return game;
 }
 
 export async function submitName(gameId: string, name: string): Promise<Game> {
@@ -342,7 +392,7 @@ function shuffleArray(array: unknown[]) {
   }
 }
 
-function getScoreForWord(word: string): number {
+function getScoreForLetters(word: string): number {
   return word
     .split('')
     .map((char) => {

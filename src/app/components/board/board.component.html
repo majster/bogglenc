@@ -1,0 +1,91 @@
+<div class="row">
+
+    <div class="col-sm-12 col-md-8 offset-md-2 col-xl-4 offset-xl-4">
+        <div *ngFor="let row of [0,1,2,3]" class="row mb-3">
+            <div *ngFor="let cell of [0,1,2,3]" class="col">
+                <button (click)="selectCell(row , cell)"
+                        [class.animate__flip]="flipCards.includes(lettersBag[row][cell].boardIndex)"
+                        [class.bg-danger]="wordInvalid && lettersBag[row][cell].selected"
+                        [class.border-danger]="wordInvalid && lettersBag[row][cell].selected"
+                        [class.last-letter]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
+                        [class.selected]="lettersBag[row][cell].selected"
+                        [disabled]="inProgress"
+                        class="btn cell w-100 card shadow-sm position-relative animate__animated"
+                        type="button">
+                    <div class="card-body w-100 text-uppercase fw-bold">
+                        <span aria-hidden="true"
+                              class="board-cell-value text-muted position-absolute">{{gameService.letterValues[lettersBag[row][cell].value]}}</span>
+                        {{ lettersBag[row][cell].value }}
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="timer position-relative">
+            <div aria-hidden="true"
+                 class="btn p-0 bg-danger position-absolute"
+                 style="z-index: -1; top: 0; bottom:0; left: 0; width: {{timeProgressBarWidth}}%;"
+            ></div>
+        </div>
+
+        <div class="commands">
+            <div [class.alert-danger]="wordInvalid"
+                 [class.alert]="wordInvalid"
+                 [class.border-danger]="wordInvalid"
+                 class="card mt-3 p-0 mb-0"
+            >
+                <div class="card-body p-0">
+                    <div *ngIf="gameService.currentWord" class="d-flex justify-content-between align-items-stretch">
+                        <button (click)="restCurrentWord()"
+                                [class.btn-outline-danger]="wordInvalid"
+                                [class.btn-outline-secondary]="!wordInvalid"
+                                class="btn  rounded-1 ps-3 pe-3 left-command shadow-sm"
+                                type="button">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                        <div class="flex-grow-1 justify-content-center d-flex align-items-center p-4">
+                            <div [class.text-danger]="wordInvalid"
+                                 class="me-2 text-uppercase">{{gameService.currentWord}}</div>
+                            <span *ngIf="gameService.currentWord.length < 3" class="text-muted"
+                                  style="font-size: 12px;">(Vsaj 3 črke)</span>
+
+                        </div>
+                        <button (click)="submit()"
+                                *ngIf="!wordInvalid"
+                                [disabled]="gameService.currentWord.length < 3 || inProgress"
+                                [class.shadow-sm]="gameService.currentWord.length >= 3 && !inProgress"
+                                class="btn btn-primary rounded-1 ps-3 pe-3 right-command text-white"
+                                type="button">
+                            <i *ngIf="!inProgress" class="bi bi-send"></i>
+                            <div *ngIf="inProgress" class="spinner-border spinner-border-sm" role="status"></div>
+                        </button>
+
+
+                        <button (click)="restCurrentWord()"
+                                *ngIf="wordInvalid"
+                                class="btn btn-outline-danger rounded-1 ps-3 pe-3 right-command shadow-sm"
+                                type="button">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                    <div *ngIf="!gameService.currentWord" class="text-muted text-center  p-4">Poišči besedo, čas se
+                        izteka!
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="gameService.currentWord.length > 2"
+                 class="text-center"
+                 style="font-size: 12px;">
+                {{calculateLettersValue(gameService.currentWord)}}
+                <span *ngIf="calculateWordLengthValue(gameService.currentWord)">
+                    + <i class="bi bi-trophy"></i> {{calculateWordLengthValue(gameService.currentWord)}}
+                </span>
+                 (+ <i class="bi bi-hourglass-top"></i> {{gameService.timeBonusByWord()}}s)
+            </div>
+            <div *ngIf="wordInvalid" class="text-center text-danger"
+                 style="font-size: 12px;">Neznana beseda
+            </div>
+        </div>
+    </div>
+
+</div>

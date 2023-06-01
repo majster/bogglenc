@@ -1,0 +1,26 @@
+<div class="row border-bottom">
+    <div class="col-3 p-2 border-end">
+        <app-score></app-score>
+    </div>
+    <div class="col p-2 d-flex align-items-center">
+        <app-inventory [gameOverCondition]="gameOverConditionInSeconds"
+                       [time]="timeProgress"></app-inventory>
+        <button (click)="actionOpenMenu()"
+                aria-label="Nastavitve"
+                class="btn btn-outline-secondary ms-auto"
+                type="button">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+</div>
+<div class="row">
+    <div class="col p-2 pt-3" role="application">
+        <app-board (wordSubmitEvent)="handleWordSubmittedEvent($event)"
+                   [gameOverCondition]="gameOverConditionInSeconds"
+                   [time]="timeProgress"
+                   [inProgress]="inProgress"
+                   [lettersBag]="gameService.gameData!.lettersBag"
+                   [wordValid$]="wordValid$"
+        ></app-board>
+    </div>
+</div>
