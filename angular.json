@@ -28,7 +28,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/site.webmanifest"
             ],
             "styles": [
 
@@ -100,7 +100,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/site.webmanifest"
             ],
             "styles": [
               "src/styles.scss"
