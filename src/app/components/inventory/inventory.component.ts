@@ -20,8 +20,6 @@ import {AchievementsComponent} from "../achievements/achievements.component";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InventoryComponent implements OnInit, OnDestroy {
-    @Input()
-    time!: number;
 
     @Input()
     gameOverCondition!: number;
@@ -33,14 +31,6 @@ export class InventoryComponent implements OnInit, OnDestroy {
     private gameDataSubscription!: Subscription;
 
     constructor(private modalService: BsModalService, public gameService: GameService, private cdr: ChangeDetectorRef) {
-    }
-
-    get timeProgressBarWidth() {
-        return this.time
-    }
-
-    get timeProgress(){
-        return Math.abs(this.gameOverCondition - this.time);
     }
 
     ngOnInit(): void {

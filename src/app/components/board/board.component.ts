@@ -12,7 +12,7 @@ import {HttpClient} from "@angular/common/http";
 import {BoggleLetter, GameService} from "../../services/game.service";
 import {BsModalService} from "ngx-bootstrap/modal";
 import {BackendService} from "../../services/backend.service";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 
 @Component({
     selector: 'app-board',
@@ -29,7 +29,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     wordValid$!: Subject<boolean>;
 
     @Input()
-    inProgress = false;
+    inProgress$!: BehaviorSubject<boolean>;
 
     @Input()
     lettersBag!: BoggleLetter[][];
@@ -38,7 +38,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     gameOverCondition!: number;
 
     @Input()
-    time!: number;
+    timeProgress$!: BehaviorSubject<number>;
+
+    time = 0;
 
     @Output()
     wordSubmitEvent = new EventEmitter<number[]>();
@@ -50,10 +52,6 @@ export class BoardComponent implements OnInit, OnDestroy {
                 private backendService: BackendService,
                 private cdr: ChangeDetectorRef) {
 
-    }
-
-    get timeProgressBarWidth() {
-        return this.time
     }
 
     selectCell(row: number, index: number) {
@@ -127,6 +125,11 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.timeProgress$.subscribe(value => {
+            this.time = value;
+            this.cdr.markForCheck();
+        });
+
         this.wordValid$.subscribe(value => {
             if (value) {
                 this.wordCorrect()
@@ -141,7 +144,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     private wordIncorrect() {
-        this.inProgress = false;
         this.wordInvalid = true;
         this.cdr.markForCheck();
     }

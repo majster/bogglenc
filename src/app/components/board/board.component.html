@@ -9,7 +9,7 @@
                         [class.border-danger]="wordInvalid && lettersBag[row][cell].selected"
                         [class.last-letter]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
                         [class.selected]="lettersBag[row][cell].selected"
-                        [disabled]="inProgress"
+                        [disabled]="inProgress$ | async"
                         class="btn cell w-100 card shadow-sm position-relative animate__animated"
                         type="button">
                     <div class="card-body w-100 text-uppercase fw-bold">
@@ -23,8 +23,9 @@
 
         <div class="timer position-relative">
             <div aria-hidden="true"
-                 class="btn p-0 bg-danger position-absolute"
-                 style="z-index: -1; top: 0; bottom:0; left: 0; width: {{timeProgressBarWidth}}%;"
+                 class="btn p-0 bg-danger position-absolute animate__animated animate__infinite"
+                 [class.animate__fadeOut]="time >= 90"
+                 style="z-index: -1; top: 0; bottom:0; left: 0; width: {{time}}%;"
             ></div>
         </div>
 
@@ -52,12 +53,12 @@
                         </div>
                         <button (click)="submit()"
                                 *ngIf="!wordInvalid"
-                                [disabled]="gameService.currentWord.length < 3 || inProgress"
-                                [class.shadow-sm]="gameService.currentWord.length >= 3 && !inProgress"
+                                [disabled]="gameService.currentWord.length < 3 || (inProgress$ | async)"
+                                [class.shadow-sm]="gameService.currentWord.length >= 3 && !(inProgress$ | async)"
                                 class="btn btn-primary rounded-1 ps-3 pe-3 right-command text-white"
                                 type="button">
-                            <i *ngIf="!inProgress" class="bi bi-send"></i>
-                            <div *ngIf="inProgress" class="spinner-border spinner-border-sm" role="status"></div>
+                            <i *ngIf="!(inProgress$ | async)" class="bi bi-send"></i>
+                            <div *ngIf="(inProgress$ | async)" class="spinner-border spinner-border-sm" role="status"></div>
                         </button>
 
 

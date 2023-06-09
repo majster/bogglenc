@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {GameService} from "../../services/game.service";
 import {MenuComponent} from "../../components/menu/menu.component";
 import {BsModalService} from "ngx-bootstrap/modal";
-import {catchError, Subject, throwError} from "rxjs";
+import {BehaviorSubject, catchError, Subject, throwError} from "rxjs";
 import {BackendService, CheckWordResult} from "../../services/backend.service";
 import {Router} from "@angular/router";
 
@@ -13,7 +13,8 @@ import {Router} from "@angular/router";
 })
 export class GameComponent implements OnInit, OnDestroy {
 
-    inProgress = false;
+    inProgress$ = new BehaviorSubject<boolean>(false);
+    timeProgress$ = new BehaviorSubject<number>(0);
     wordValid$ = new Subject<boolean>()
     gameOverConditionInSeconds = GameService.GAME_END_CONDITION_IN_SECONDS;
     private timerInterval!: any
@@ -26,17 +27,22 @@ export class GameComponent implements OnInit, OnDestroy {
                 private router: Router) {
     }
 
-
-    get timeProgress() {
-        return this.gameService.gameData?.timerProgress || 0;
-    }
-
     ngOnInit() {
         if (this.gameService.gameData?.timerProgress) {
+            this.timeProgress$.next(this.gameService.gameData.timerProgress);
             this.resumeTimer();
         } else {
             this.createTimer();
         }
+
+        // function to subscribe to inProgress BehaviorSubject
+        this.inProgress$.subscribe(value => {
+            if (value) {
+                this.pauseTimer();
+            } else {
+                this.resumeTimer();
+            }
+        })
     }
 
     actionOpenMenu() {
@@ -48,7 +54,7 @@ export class GameComponent implements OnInit, OnDestroy {
     }
 
     handleWordSubmittedEvent(selectedLetterIndexes: number[]) {
-        this.inProgress = true;
+        this.inProgress$.next(true);
         this.pauseTimer();
         this.cdr.detectChanges();
 
@@ -60,24 +66,27 @@ export class GameComponent implements OnInit, OnDestroy {
                     return throwError(err);
                 })
             )
-            .subscribe(check => {
+            .subscribe((check: CheckWordResult) => {
                 if (check.correct) {
                     this.wordCorrect(check);
                 } else {
                     this.wordIncorrect();
                 }
                 this.gameService.gameData!.game = check.game;
-                this.inProgress = false;
-                this.resumeTimer();
+
+                // server returns game with endedAt field if game is over
+                if (check.game.endedAt) {
+                    this.inProgress$.next(true);
+                    this.router.navigate(['game-over'], {skipLocationChange: true})
+                }
             });
     }
 
     private wordIncorrect() {
-        this.inProgress = false;
-        this.resumeTimer();
         this.cdr.detectChanges();
         this.gameService.missedWords?.push(this.gameService.currentWord)
         this.wordValid$.next(false);
+        this.inProgress$.next(false);
     }
 
     private createTimer() {
@@ -99,13 +108,15 @@ export class GameComponent implements OnInit, OnDestroy {
             this.gameService.persistGameData();
             if (this.gameService.gameData!.timerProgress >= this.gameOverConditionInSeconds) {
                 this.handleGameOverCondition();
+            } else {
+                this.timeProgress$.next(this.gameService.gameData!.timerProgress);
             }
 
         }, GameService.GAME_TIME_OUT_MILIS)
     }
 
     private handleGameOverCondition() {
-        this.inProgress = true;
+        this.inProgress$.next(true);
         this.cdr.detectChanges();
         this.backendService.gameOver(this.gameService.gameData!.game.id)
             .pipe(
@@ -124,12 +135,13 @@ export class GameComponent implements OnInit, OnDestroy {
         this.applyChangesTimeout = setTimeout(() => {
             // wait for animation to apply changes
             this.gameService.applyBackendGame(check.game);
+            this.inProgress$.next(false);
             this.cdr.detectChanges();
         }, 700);
         this.gameService.guessedWords?.push(this.gameService.currentWord)
         this.wordValid$.next(true);
-        this.gameService.gameData!.timerProgress = Math.max(this.gameService.gameData!.timerProgress - this.gameService.timeBonusByWord(), 0);
-        this.inProgress = false;
+        this.gameService.gameData!.timerProgress = Math.max(this.gameService.gameData!.timerProgress - this.gameService.timeBonusByWord(), 0);;
+        this.timeProgress$.next(this.gameService.gameData!.timerProgress);
         this.cdr.detectChanges();
     }
 
