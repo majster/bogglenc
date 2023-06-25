@@ -153,4 +153,21 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.wordInvalid = false
         this.cdr.markForCheck();
     }
+
+    handleSpeechInput(word: string) {
+        console.log(word)
+        word.split('').forEach((letter, index) => {
+            const letterBag = this.gameService.boardBag.find(boggleLetter => {
+                return boggleLetter.value === letter
+            })
+            if (letterBag) {
+                letterBag.selectedIndex = index + 1
+                letterBag.selected = true
+            }
+        })
+        this.gameService.persistGameData();
+        this.cdr.markForCheck()
+        this.submit()
+        // setTimeout(() => );
+    }
 }

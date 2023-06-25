@@ -21,6 +21,7 @@ import {GameOverComponent} from './views/game-over/game-over.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {TimerComponent} from './components/timer/timer.component';
 import {BoardKeyComponent} from './components/board-key/board-key.component';
+import {SpeechCaptureComponent} from './components/speech-capture/speech-capture.component';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import {BoardKeyComponent} from './components/board-key/board-key.component';
         GameComponent,
         GameOverComponent,
         TimerComponent,
-        BoardKeyComponent
+        BoardKeyComponent,
+        SpeechCaptureComponent
     ],
     imports: [
         ModalModule.forRoot(),

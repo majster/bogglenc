@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {GameService} from "../../services/game.service";
 import {MenuComponent} from "../../components/menu/menu.component";
 import {BsModalService} from "ngx-bootstrap/modal";
-import {BehaviorSubject, catchError, Subject, throwError} from "rxjs";
+import {BehaviorSubject, catchError, EMPTY, Subject, throwError} from "rxjs";
 import {BackendService, CheckWordResult} from "../../services/backend.service";
 import {Router} from "@angular/router";
 
@@ -62,8 +62,7 @@ export class GameComponent implements OnInit, OnDestroy {
             .pipe(
                 catchError(err => {
                     this.wordIncorrect();
-                    console.log('Handling error locally and rethrowing it...', err);
-                    return throwError(err);
+                    return EMPTY;
                 })
             )
             .subscribe((check: CheckWordResult) => {
@@ -141,7 +140,8 @@ export class GameComponent implements OnInit, OnDestroy {
         }, 700);
         this.gameService.guessedWords?.push(this.gameService.currentWord)
         this.wordValid$.next(true);
-        this.gameService.gameData!.timerProgress = Math.max(this.gameService.gameData!.timerProgress - this.gameService.timeBonusByWord(), 0);;
+        this.gameService.gameData!.timerProgress = Math.max(this.gameService.gameData!.timerProgress - this.gameService.timeBonusByWord(), 0);
+
         this.timeProgress$.next(this.gameService.gameData!.timerProgress);
         this.cdr.detectChanges();
     }
