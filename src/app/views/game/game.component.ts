@@ -127,6 +127,7 @@ export class GameComponent implements OnInit, OnDestroy {
             )
             .subscribe(value => {
                 this.gameService.gameData!.game = value;
+                this.gameService.persistGameData()
                 this.router.navigate(['game-over'], {skipLocationChange: true})
             })
     }

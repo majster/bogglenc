@@ -62,7 +62,6 @@ export class GameService {
         'ž': 10,
     };
     gameSettings: GameSettings = {} as GameSettings
-    gameDataSubject$ = new Subject<any>();
     leaderBoardFormSubject$ = new Subject<any>();
     beforeInstallPrompt: any;
 
@@ -131,11 +130,6 @@ export class GameService {
 
     public sortBySelectedIndex(arr: any[]) {
         return arr.sort((a, b) => b.selectedIndex - a.selectedIndex);
-    }
-
-    stateChanged(wordGuess?: boolean) {
-        this.gameDataSubject$.next(wordGuess);
-        this.persistGameData();
     }
 
     public convertToMultiDimensionalBoardBag(arr: BoggleLetter[]): BoggleLetter[][] {

@@ -3,30 +3,21 @@
     <div class="col-sm-12 col-md-8 offset-md-2 col-xl-4 offset-xl-4">
         <div *ngFor="let row of [0,1,2,3]" class="row mb-3">
             <div *ngFor="let cell of [0,1,2,3]" class="col">
-                <button (click)="selectCell(row , cell)"
-                        [class.animate__flip]="flipCards.includes(lettersBag[row][cell].boardIndex)"
-                        [class.bg-danger]="wordInvalid && lettersBag[row][cell].selected"
-                        [class.border-danger]="wordInvalid && lettersBag[row][cell].selected"
-                        [class.last-letter]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
-                        [class.selected]="lettersBag[row][cell].selected"
-                        [disabled]="inProgress$ | async"
-                        class="btn cell w-100 card shadow-sm position-relative animate__animated"
-                        type="button">
-                    <div class="card-body w-100 text-uppercase fw-bold">
-                        <span aria-hidden="true"
-                              class="board-cell-value text-muted position-absolute">{{gameService.letterValues[lettersBag[row][cell].value]}}</span>
-                        {{ lettersBag[row][cell].value }}
-                    </div>
-                </button>
+                <app-board-key
+                        (selectedEvent)="selectCell(row , cell)"
+                        [character]="lettersBag[row][cell].value"
+                        [isDisabled]="inProgress$ | async"
+                        [isFlipping]="flipCards.includes(lettersBag[row][cell].boardIndex)"
+                        [isInvalid]="wordInvalid && lettersBag[row][cell].selected"
+                        [isLastSelected]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
+                        [isSelected]="lettersBag[row][cell].selected"
+                        [value]="gameService.letterValues[lettersBag[row][cell].value]"
+                ></app-board-key>
             </div>
         </div>
 
-        <div class="timer position-relative">
-            <div aria-hidden="true"
-                 class="btn p-0 bg-danger position-absolute animate__animated animate__infinite"
-                 [class.animate__fadeOut]="time >= 90"
-                 style="z-index: -1; top: 0; bottom:0; left: 0; width: {{time}}%;"
-            ></div>
+        <div>
+            <app-timer [timeProgress$]="timeProgress$"></app-timer>
         </div>
 
         <div class="commands">
@@ -53,12 +44,13 @@
                         </div>
                         <button (click)="submit()"
                                 *ngIf="!wordInvalid"
-                                [disabled]="gameService.currentWord.length < 3 || (inProgress$ | async)"
                                 [class.shadow-sm]="gameService.currentWord.length >= 3 && !(inProgress$ | async)"
+                                [disabled]="gameService.currentWord.length < 3 || (inProgress$ | async)"
                                 class="btn btn-primary rounded-1 ps-3 pe-3 right-command text-white"
                                 type="button">
                             <i *ngIf="!(inProgress$ | async)" class="bi bi-send"></i>
-                            <div *ngIf="(inProgress$ | async)" class="spinner-border spinner-border-sm" role="status"></div>
+                            <div *ngIf="(inProgress$ | async)" class="spinner-border spinner-border-sm"
+                                 role="status"></div>
                         </button>
 
 
@@ -81,7 +73,7 @@
                 <span *ngIf="calculateWordLengthValue(gameService.currentWord)">
                     + <i class="bi bi-trophy"></i> {{calculateWordLengthValue(gameService.currentWord)}}
                 </span>
-                 (+ <i class="bi bi-hourglass-top"></i> {{gameService.timeBonusByWord()}}s)
+                (+ <i class="bi bi-hourglass-top"></i> {{gameService.timeBonusByWord()}}s)
             </div>
             <div *ngIf="wordInvalid" class="text-center text-danger"
                  style="font-size: 12px;">Neznana beseda

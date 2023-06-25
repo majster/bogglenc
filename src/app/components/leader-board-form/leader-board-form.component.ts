@@ -48,30 +48,32 @@ export class LeaderBoardFormComponent {
 
         let cell = this.boardBag[row][index];
 
-        const selectedByLastIndex = this.sortBySelectedIndex[0];
-        if (cell.selected && cell.selectedIndex === selectedByLastIndex.selectedIndex) {
-            // unselect
-            cell.selected = false;
-            cell.selectedIndex = 0;
-            this.currentWord = this.currentWord.substring(0, this.currentWord.length - 1);
-            return;
+        if(cell && cell.value) {
+            const selectedByLastIndex = this.sortBySelectedIndex[0];
+            if (cell.selected && cell.selectedIndex === selectedByLastIndex.selectedIndex) {
+                // unselect
+                cell.selected = false;
+                cell.selectedIndex = 0;
+                this.currentWord = this.currentWord.substring(0, this.currentWord.length - 1);
+                return;
+            }
+
+            if (cell.selected) {
+                return;
+            }
+
+            if (selectedByLastIndex) {
+                cell.selectedIndex = selectedByLastIndex.selectedIndex + 1;
+            } else {
+                cell.selectedIndex = 1;
+            }
+
+
+            // Select the new cell and update the selected row and col
+            cell.selected = true;
+
+            this.currentWord += cell.value
         }
-
-        if (cell.selected) {
-            return;
-        }
-
-        if (selectedByLastIndex) {
-            cell.selectedIndex = selectedByLastIndex.selectedIndex + 1;
-        } else {
-            cell.selectedIndex = 1;
-        }
-
-
-        // Select the new cell and update the selected row and col
-        cell.selected = true;
-
-        this.currentWord += cell.value
     }
 
     submit() {
@@ -89,7 +91,7 @@ export class LeaderBoardFormComponent {
                 this.inProgress = false;
                 this.gameService.leaderBoardFormSubject$.next(true);
                 this.gameService.gameData!.game.name = this.currentWord;
-                this.gameService.stateChanged(false)
+                this.gameService.persistGameData()
                 this.modalRef.hide();
             })
     }

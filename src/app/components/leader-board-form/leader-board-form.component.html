@@ -7,16 +7,13 @@
 <div class="modal-body">
     <div *ngFor="let row of [0,1,2,3]" class="row mb-3">
         <div *ngFor="let cell of [0,1,2,3]" class="col">
-            <button (click)="selectCell(row , cell)"
-                    [class.last-letter]="sortBySelectedIndex[0] && sortBySelectedIndex[0].selectedIndex > 0 && boardBag[row][cell].selectedIndex === sortBySelectedIndex[0].selectedIndex"
-                    [class.selected]="boardBag[row][cell].selected"
-                    [disabled]="inProgress || maxLength"
-                    class="btn cell w-100 card shadow-sm position-relative"
-                    type="button">
-                <div class="card-body w-100 text-uppercase fw-bold">
-                    {{ boardBag[row][cell].value }}
-                </div>
-            </button>
+            <app-board-key
+                    (selectedEvent)="selectCell(row , cell)"
+                    [character]="boardBag[row][cell].value"
+                    [isDisabled]="inProgress || maxLength || (!boardBag[row][cell].value)"
+                    [isLastSelected]="sortBySelectedIndex[0] && sortBySelectedIndex[0].selectedIndex > 0 && boardBag[row][cell].selectedIndex === sortBySelectedIndex[0].selectedIndex"
+                    [isSelected]="boardBag[row][cell].selected"
+            ></app-board-key>
         </div>
     </div>
 

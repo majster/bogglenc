@@ -19,6 +19,8 @@ import {AchievementsComponent} from './components/achievements/achievements.comp
 import {GameComponent} from './views/game/game.component';
 import {GameOverComponent} from './views/game-over/game-over.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
+import {TimerComponent} from './components/timer/timer.component';
+import {BoardKeyComponent} from './components/board-key/board-key.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +37,9 @@ import {ServiceWorkerModule} from '@angular/service-worker';
         ModalComponent,
         AchievementsComponent,
         GameComponent,
-        GameOverComponent
+        GameOverComponent,
+        TimerComponent,
+        BoardKeyComponent
     ],
     imports: [
         ModalModule.forRoot(),

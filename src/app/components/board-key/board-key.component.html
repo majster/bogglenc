@@ -1,0 +1,15 @@
+<button (click)="selectedEvent.emit()"
+        [class.animate__flip]="isFlipping"
+        [class.bg-danger]="isInvalid"
+        [class.border-danger]="isInvalid"
+        [class.last-letter]="isLastSelected"
+        [class.selected]="isSelected"
+        [disabled]="isDisabled"
+        class="btn cell w-100 card shadow-sm position-relative animate__animated"
+        type="button">
+    <div class="card-body w-100 text-uppercase fw-bold">
+                        <span aria-hidden="true"
+                              class="board-cell-value text-muted position-absolute">{{value}}</span>
+        {{ character }}
+    </div>
+</button>

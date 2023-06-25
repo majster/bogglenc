@@ -1,0 +1,44 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+
+.cell {
+
+  width: 63px;
+  height: 63px;
+  font-size: 1.5rem;
+  line-height: 1;
+  border-width: 3px;
+
+  .card-body {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &.selected {
+    background-color: $gray-600;
+  }
+
+  &.last-letter {
+    background-color: var(--bs-primary);
+    div {
+      color: white !important;
+    }
+
+    .board-cell-value {
+      color: white !important;
+    }
+  }
+
+  .board-cell-value {
+    top: 2px;
+    right: 2px;
+    font-size: 0.825rem;
+  }
+
+  &:disabled{
+    border-color: var(--bs-card-border-color) !important;
+  }
+}

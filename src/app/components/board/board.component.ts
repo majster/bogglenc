@@ -40,8 +40,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     @Input()
     timeProgress$!: BehaviorSubject<number>;
 
-    time = 0;
-
     @Output()
     wordSubmitEvent = new EventEmitter<number[]>();
     private flipTimeout!: number;
@@ -80,7 +78,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         // Select the new cell and update the selected row and col
         cell.selected = true;
 
-        this.gameService.stateChanged();
+        this.gameService.persistGameData();
     }
 
     calculateLettersValue(word: string): number {
@@ -121,15 +119,10 @@ export class BoardComponent implements OnInit, OnDestroy {
             value.selected = false
             value.selectedIndex = 0
         })
-        this.gameService.stateChanged();
+        this.gameService.persistGameData();
     }
 
     ngOnInit(): void {
-        this.timeProgress$.subscribe(value => {
-            this.time = value;
-            this.cdr.markForCheck();
-        });
-
         this.wordValid$.subscribe(value => {
             if (value) {
                 this.wordCorrect()
