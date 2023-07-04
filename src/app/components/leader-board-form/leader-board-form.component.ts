@@ -48,7 +48,7 @@ export class LeaderBoardFormComponent {
 
         let cell = this.boardBag[row][index];
 
-        if(cell && cell.value) {
+        if(cell && cell.char) {
             const selectedByLastIndex = this.sortBySelectedIndex[0];
             if (cell.selected && cell.selectedIndex === selectedByLastIndex.selectedIndex) {
                 // unselect
@@ -72,7 +72,7 @@ export class LeaderBoardFormComponent {
             // Select the new cell and update the selected row and col
             cell.selected = true;
 
-            this.currentWord += cell.value
+            this.currentWord += cell.char
         }
     }
 
@@ -118,10 +118,11 @@ export class LeaderBoardFormComponent {
         for (let i = 0; i < GameService.BOARD_SIZE; i++) {
 
             arr.push({
-                value: this.charArr[i + this.bagIndex],
+                char: this.charArr[i + this.bagIndex],
                 selectedIndex: 0,
                 boardIndex: i,
-                selected: false
+                selected: false,
+                score: 0
             })
         }
 

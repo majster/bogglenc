@@ -5,13 +5,13 @@
             <div *ngFor="let cell of [0,1,2,3]" class="col">
                 <app-board-key
                         (selectedEvent)="selectCell(row , cell)"
-                        [character]="lettersBag[row][cell].value"
+                        [character]="lettersBag[row][cell].char"
                         [isDisabled]="inProgress$ | async"
                         [isFlipping]="flipCards.includes(lettersBag[row][cell].boardIndex)"
                         [isInvalid]="wordInvalid && lettersBag[row][cell].selected"
                         [isLastSelected]="gameService.selectedByLastIndex[0] && gameService.selectedByLastIndex[0].selectedIndex > 0 && lettersBag[row][cell].selectedIndex === gameService.selectedByLastIndex[0].selectedIndex"
                         [isSelected]="lettersBag[row][cell].selected"
-                        [value]="gameService.letterValues[lettersBag[row][cell].value]"
+                        [value]="lettersBag[row][cell].score"
                 ></app-board-key>
             </div>
         </div>

@@ -2,7 +2,6 @@ import { db } from './admin';
 import * as crypto from 'crypto';
 import * as wordService from './word';
 
-type LetterScore = 1 | 2 | 3 | 4 | 5 | 7 | 10;
 type LetterChar =
   | 'a'
   | 'b'
@@ -32,7 +31,8 @@ type LetterChar =
 
 export interface Letter {
   char: LetterChar;
-  score: LetterScore;
+  score: number;
+  weight: number;
 }
 
 export interface Game {
@@ -57,41 +57,31 @@ export interface CheckWordResult {
 }
 
 const LETTERS: Letter[] = [
-  { char: 'a', score: 1 },
-  { char: 'b', score: 3 },
-  { char: 'c', score: 3 },
-  { char: 'č', score: 4 },
-  { char: 'd', score: 2 },
-  { char: 'e', score: 1 },
-  { char: 'f', score: 7 },
-  { char: 'g', score: 4 },
-  { char: 'h', score: 5 },
-  { char: 'i', score: 1 },
-  { char: 'j', score: 4 },
-  { char: 'k', score: 2 },
-  { char: 'l', score: 1 },
-  { char: 'm', score: 2 },
-  { char: 'n', score: 2 },
-  { char: 'o', score: 1 },
-  { char: 'p', score: 3 },
-  { char: 'r', score: 1 },
-  { char: 's', score: 2 },
-  { char: 'š', score: 4 },
-  { char: 't', score: 2 },
-  { char: 'u', score: 4 },
-  { char: 'v', score: 4 },
-  { char: 'z', score: 2 },
-  { char: 'ž', score: 10 },
-];
-
-const RANDOM_LETTER_SCORE_WEIGHTS: { score: LetterScore; weight: number }[] = [
-  { score: 1, weight: 50 },
-  { score: 2, weight: 10 },
-  { score: 3, weight: 10 },
-  { score: 4, weight: 10 },
-  { score: 5, weight: 5 },
-  { score: 7, weight: 5 },
-  { score: 10, weight: 5 },
+  { char: 'a', weight: 100, score: 1 },
+  { char: 'b', weight: 25, score: 8 },
+  { char: 'c', weight: 15, score: 10 },
+  { char: 'č', weight: 20, score: 9 },
+  { char: 'd', weight: 40, score: 7 },
+  { char: 'e', weight: 100, score: 1 },
+  { char: 'f', weight: 10, score: 10 },
+  { char: 'g', weight: 25, score: 9 },
+  { char: 'h', weight: 20, score: 9 },
+  { char: 'i', weight: 85, score: 2 },
+  { char: 'j', weight: 50, score: 6 },
+  { char: 'k', weight: 40, score: 7 },
+  { char: 'l', weight: 55, score: 6 },
+  { char: 'm', weight: 35, score: 7 },
+  { char: 'n', weight: 65, score: 5 },
+  { char: 'o', weight: 85, score: 2 },
+  { char: 'p', weight: 35, score: 7 },
+  { char: 'r', weight: 50, score: 6 },
+  { char: 's', weight: 50, score: 6 },
+  { char: 'š', weight: 15, score: 9 },
+  { char: 't', weight: 45, score: 6 },
+  { char: 'u', weight: 25, score: 8 },
+  { char: 'v', weight: 40, score: 7 },
+  { char: 'z', weight: 25, score: 8 },
+  { char: 'ž', weight: 15, score: 10 },
 ];
 
 const SCORE_BY_LENGTH: { [key: number]: number } = {
@@ -356,33 +346,23 @@ function ensureSolvable(board: Letter[], indexesToReplace: number[]) {
 }
 
 function generateRandomLetter(): Letter {
-  const totalWeightSum = RANDOM_LETTER_SCORE_WEIGHTS.reduce(
-    (sum, scoreWeight) => sum + scoreWeight.weight,
+  const totalWeightSum = LETTERS.reduce(
+    (sum, letter) => sum + letter.weight,
     0,
   );
 
   const targetWeightSum = Math.random() * totalWeightSum;
 
   let sumSoFar = 0;
-  for (const scoreWeight of RANDOM_LETTER_SCORE_WEIGHTS) {
-    sumSoFar += scoreWeight.weight;
+  for (const letter of LETTERS) {
+    sumSoFar += letter.weight;
     if (targetWeightSum <= sumSoFar) {
-      return getRandomLetterForScore(scoreWeight.score);
+      return letter;
     }
   }
 
   // Fallback for floating point arithmetic errors
-  return getRandomLetterForScore(
-    RANDOM_LETTER_SCORE_WEIGHTS[RANDOM_LETTER_SCORE_WEIGHTS.length - 1].score,
-  );
-}
-
-function getRandomLetterForScore(score: LetterScore): Letter {
-  const availableLetters: Letter[] = LETTERS.filter(
-    (letter) => letter.score === score,
-  );
-  const randomIndex = Math.floor(Math.random() * availableLetters.length);
-  return availableLetters[randomIndex];
+  return LETTERS[LETTERS.length - 1];
 }
 
 function shuffleArray(array: unknown[]) {
