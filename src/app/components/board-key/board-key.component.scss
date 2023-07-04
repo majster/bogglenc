@@ -19,6 +19,9 @@
 
   &.selected {
     background-color: $gray-600;
+    .text-muted {
+        color: $gray-400 !important;
+    }
   }
 
   &.last-letter {

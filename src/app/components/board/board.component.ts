@@ -85,9 +85,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
         let score = 0;
 
-        for (const letter of word) {
-            score += this.gameService.letterValues[letter];
-        }
+        this.gameService.selectedLetters.forEach((letter: BoggleLetter) => {
+            score += letter.score;
+        });
 
         return score;
     }

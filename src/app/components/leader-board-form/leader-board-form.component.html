@@ -9,8 +9,8 @@
         <div *ngFor="let cell of [0,1,2,3]" class="col">
             <app-board-key
                     (selectedEvent)="selectCell(row , cell)"
-                    [character]="boardBag[row][cell].value"
-                    [isDisabled]="inProgress || maxLength || (!boardBag[row][cell].value)"
+                    [character]="boardBag[row][cell].char"
+                    [isDisabled]="inProgress || maxLength || (!boardBag[row][cell].char)"
                     [isLastSelected]="sortBySelectedIndex[0] && sortBySelectedIndex[0].selectedIndex > 0 && boardBag[row][cell].selectedIndex === sortBySelectedIndex[0].selectedIndex"
                     [isSelected]="boardBag[row][cell].selected"
             ></app-board-key>

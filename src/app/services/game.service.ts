@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Subject} from "rxjs";
-import {BackendService, Game} from "./backend.service";
+import {BackendService, Game, Letter} from "./backend.service";
 
-export interface BoggleLetter {
-    value: string
+export interface BoggleLetter extends Letter {
     selected: boolean
     selectedIndex: number
     boardIndex: number
@@ -35,31 +34,31 @@ export class GameService {
     public static LOCAL_STORAGE_GAME_SETTINGS = 'gameSettings';
 
     letterValues: { [key: string]: number } = {
-        'a': 1,
-        'b': 3,
-        'c': 3,
-        'č': 4,
-        'd': 2,
-        'e': 1,
-        'f': 7,
-        'g': 4,
-        'h': 5,
-        'i': 1,
-        'j': 4,
-        'k': 2,
-        'l': 1,
-        'm': 2,
-        'n': 2,
-        'o': 1,
-        'p': 3,
-        'r': 1,
-        's': 2,
-        'š': 4,
-        't': 2,
-        'u': 4,
-        'v': 4,
-        'z': 2,
-        'ž': 10,
+        'a': 0,
+        'b': 0,
+        'c': 0,
+        'č': 0,
+        'd': 0,
+        'e': 0,
+        'f': 0,
+        'g': 0,
+        'h': 0,
+        'i': 0,
+        'j': 0,
+        'k': 0,
+        'l': 0,
+        'm': 0,
+        'n': 0,
+        'o': 0,
+        'p': 0,
+        'r': 0,
+        's': 0,
+        'š': 0,
+        't': 0,
+        'u': 0,
+        'v': 0,
+        'z': 0,
+        'ž': 0,
     };
     gameSettings: GameSettings = {} as GameSettings
     leaderBoardFormSubject$ = new Subject<any>();
@@ -102,9 +101,9 @@ export class GameService {
     get currentWord(): string {
         const boggleLettersBySelectedIndex = this.selectedByLastIndex;
         let currentWordInReverse = '';
-        boggleLettersBySelectedIndex.forEach(letter => {
+        boggleLettersBySelectedIndex.forEach((letter: BoggleLetter) => {
             if (letter.selectedIndex > 0) {
-                currentWordInReverse += letter.value;
+                currentWordInReverse += letter.char;
             }
         })
         return currentWordInReverse.split("").reverse().join("");
@@ -168,12 +167,14 @@ export class GameService {
 
     public applyBackendGame(game: Game) {
         const playerLettersBag = game.board.map((letter, index) => {
+
             return {
-                value: letter.char,
-                selected: false,
-                selectedIndex: 0,
-                boardIndex: index
-            } as BoggleLetter
+                ...letter,
+                ...{
+                    selected: false,
+                    selectedIndex: 0,
+                    boardIndex: index
+                }}
         });
 
         this.gameData!.game = game;
